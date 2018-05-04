@@ -1,7 +1,18 @@
-// import * as CSV from "csvtojson";
-const CSV = require("csvtojson");
+import CSV from "csvtojson";
 import { readFile } from "fs";
 import { emitter } from "../dirwatcher";
+
+const converterOptions = {
+	noheader: true,
+	trim: true,
+};
+
+const mapData = header => (result, data) => {
+    result.push(Object.keys(data).reduce((object, key) => {
+        object[header[key].replace(" ", "")] = data[key];
+        return object;
+    }, new Object()));
+};
 
 // Listen to DirWatcher events and start importing CSV files (convert CSV to JSON) on 'dirwatcher:changed' event
 export class Importer {
@@ -9,14 +20,24 @@ export class Importer {
     import(path = null) {
         return new Promise((resolve, reject) => {
             emitter.on("changed", value => {
-                readFile(`${path}\\products-data.csv`, { encoding: 'utf8' }, (error, csvString) => {
+                readFile(path, { encoding: 'utf8' }, (error, csvString) => {
                     if (!error) {
-                        console.log("Raw CSV: ", csvString);
-                        CSV({noheader: true})
+                        let pusher, result = [];
+
+                        CSV(converterOptions)
                             .fromString(csvString)
-                            .on("json", json => {
-                                resolve(json);
+                            .on("json", (data, row) => {
+                                if (row === 0) {
+                                    pusher = mapData(data);
+                                } else {
+                                    pusher(result, data);
+                                }
+                            })
+                            .on("error", error => {
+                                reject(error);
                             });
+
+                        resolve(result);
                     } else {
                         reject(error);
                     }
