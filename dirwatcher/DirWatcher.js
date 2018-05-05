@@ -10,6 +10,11 @@ const emitter = new DirWatcherEmitter();
 
 class DirWatcher {
 
+    /**
+     * Watches the specified directory for changes and emits an event once the changes occur
+     * @param {string} path 
+     * @param {number} delay 
+     */
     watch(path = null, delay = 100) {
         // Emit 'changed' event if dir content changed
         // When the path is cheked for the first time all files treated as new
