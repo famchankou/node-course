@@ -1,10 +1,10 @@
-import * as path from "path";
+import * as Path from "path";
 import config from "./config";
 import { User, Product } from "./models";
 import { DirWatcher } from "./dirwatcher";
 import { Importer } from "./importer";
 
-const DATA_DIR = path.join(__dirname, "data");
+const DATA_DIR = Path.join(__dirname, "data");
 
 (() => {
     let user = new User();
@@ -14,9 +14,12 @@ const DATA_DIR = path.join(__dirname, "data");
     let dirWatcher = new DirWatcher();
     
     dirWatcher.watch(DATA_DIR, 3000);
+
+    console.log("SYNC: ", importer._readFilesSync(DATA_DIR));
+
     importer
-        .import(DATA_DIR + "/products-data.csv")
-        .then(data => console.log("Data: ", data))
+        .import(DATA_DIR)
+        .then(data => console.log("Data: ", JSON.stringify(data)))
         .catch(error => console.error("Error: ", error));
 
 })();

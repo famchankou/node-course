@@ -1,7 +1,11 @@
 import { EventEmitter } from "events";
 import { readdir } from "fs";
 
-class DirWatcherEmitter extends EventEmitter {}
+class DirWatcherEmitter extends EventEmitter {
+    emit(event, value) {
+        super.emit(`dirwatcher:${event}`, value);
+    }
+}
 const emitter = new DirWatcherEmitter();
 
 class DirWatcher {
