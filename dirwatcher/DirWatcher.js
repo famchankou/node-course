@@ -1,4 +1,5 @@
 import { EventEmitter } from "events";
+import { Importer } from "../importer";
 import { readdir } from "fs";
 
 class DirWatcherEmitter extends EventEmitter {

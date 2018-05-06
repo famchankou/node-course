@@ -1,7 +1,7 @@
 import CSV from "csvtojson";
+import * as CSVSync from "csvjson";
 import * as Path from "path";
 import { readFile, readdir, readFileSync, readdirSync } from "fs";
-import { emitter } from "../dirwatcher";
 
 const converterOptions = {
 	noheader: true,
@@ -16,26 +16,25 @@ export class Importer {
      */
     import(path = null) {
         return new Promise((resolve, reject) => {
-            emitter.on("dirwatcher:changed", value => {
-                this._readFiles(path)
-                    .then(data => {
-                        let promises = [];
-                        data.forEach(dataChunk => {
-                            promises.push(new Promise((resolve, reject) => {
-                                this._convertCSVtoJS(Object.values(dataChunk)[0], (error, data) => {
-                                    if (!error) {
-                                        resolve({[Object.keys(dataChunk)[0]]: data});
-                                    } else {
-                                        reject(error);
-                                    }
-                                })
-                            }));
-                        });
+            Importer._readFiles(path)
+                .then(data => {
+                    let promises = [];
 
-                        resolve(Promise.all(promises));
-                    })
-                    .catch(error => reject(error));
-            });
+                    data.forEach(dataChunk => {
+                        promises.push(new Promise((resolve, reject) => {
+                            Importer._convertCSVtoJS(Object.values(dataChunk)[0], (error, data) => {
+                                if (!error) {
+                                    resolve({[Object.keys(dataChunk)[0]]: data});
+                                } else {
+                                    reject(error);
+                                }
+                            })
+                        }));
+                    });
+
+                    resolve(Promise.all(promises));
+                })
+                .catch(error => reject(error));
         });
     }
 
@@ -44,8 +43,9 @@ export class Importer {
      * @param {string} path 
      */
     importSync(path = null) {
-        
-        
+        return Importer._readFilesSync(path).map(data => {
+            return {[Object.keys(data)[0]]: CSVSync.toObject(Object.values(data)[0])};
+        });
     }
 
     /**
@@ -53,14 +53,14 @@ export class Importer {
      * Returns Promise<Array<{filename: data}>>
      * @param {string} dirname 
      */
-    _readFiles(dirname) {
+    static _readFiles(dirname = null) {
         return new Promise((resolve, reject) => {
             readdir(dirname, (error, filenames) => {
                 let promises = [], csvRegex = RegExp(".+(\.csv)$");
                 if (error) reject(error);
 
                 filenames
-                    .filter(file => csvRegex.test(file))
+                    .filter(filename => csvRegex.test(filename))
                     .forEach(filename => {
                         promises.push(new Promise((resolve, reject) => {
                             readFile(Path.join(dirname, filename), { encoding: "utf8" }, (error, data) => {
@@ -80,9 +80,20 @@ export class Importer {
      * Returns Array<{filename: data}>
      * @param {string} dirname 
      */
-    _readFilesSync(dirname) {
-        let filenames = readdirSync(dirname);
-        return filenames.map(filename => {[filename]: readFileSync(Path.join(dirname, filename), { encoding: "utf8" })});
+    static _readFilesSync(dirname = null) {
+        let csvRegex = RegExp(".+(\.csv)$");
+        try {
+            let filenames = readdirSync(dirname);
+            return filenames
+                .filter(filename => csvRegex.test(filename))
+                .map(filename => {
+                    return {
+                        [filename]: readFileSync(Path.join(dirname, filename), { encoding: "utf8" })
+                    }
+                });
+        } catch (error) {
+            return error;
+        }
     }
 
     /**
@@ -91,14 +102,14 @@ export class Importer {
      * @param {string} csvString 
      * @param {Function} handler 
      */
-    _convertCSVtoJS(csvString, handler = (error, result) => void 0) {
+    static _convertCSVtoJS(csvString = "", handler = (error, result) => void 0) {
         let pusher, result = [];
 
         CSV(converterOptions)
             .fromString(csvString)
             .on("json", (data, row) => {
                 if (row === 0) {
-                    pusher = this._mapData(data);
+                    pusher = Importer._mapData(data);
                 } else {
                     pusher(result, data);
                 }
@@ -112,7 +123,7 @@ export class Importer {
      * Returnes remapped Object
      * @param {Object} header 
      */
-    _mapData(header) {
+    static _mapData(header) {
         return (result, data) => {
             result.push(Object.keys(data).reduce((object, key) => {
                 object[header[key].replace(" ", "")] = data[key];
