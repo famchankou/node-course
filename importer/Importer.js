@@ -56,11 +56,11 @@ export class Importer {
     static _readFiles(dirname = null) {
         return new Promise((resolve, reject) => {
             readdir(dirname, (error, filenames) => {
-                let promises = [], csvRegex = RegExp(".+(\.csv)$");
+                let promises = [];
                 if (error) reject(error);
 
                 filenames
-                    .filter(filename => csvRegex.test(filename))
+                    .filter(filename => Importer._isCSV(filename))
                     .forEach(filename => {
                         promises.push(new Promise((resolve, reject) => {
                             readFile(Path.join(dirname, filename), { encoding: "utf8" }, (error, data) => {
@@ -81,11 +81,10 @@ export class Importer {
      * @param {string} dirname 
      */
     static _readFilesSync(dirname = null) {
-        let csvRegex = RegExp(".+(\.csv)$");
         try {
             let filenames = readdirSync(dirname);
             return filenames
-                .filter(filename => csvRegex.test(filename))
+                .filter(filename => Importer._isCSV(filename))
                 .map(filename => {
                     return {
                         [filename]: readFileSync(Path.join(dirname, filename), { encoding: "utf8" })
@@ -130,6 +129,16 @@ export class Importer {
                 return object;
             }, new Object()));
         };
+    }
+
+    /**
+     * Verifies if a given file of CSV format
+     * Returns true if CSV and false otherwise
+     * @param {string} filename 
+     */
+    static _isCSV(filename) {
+        let csvRegex = RegExp(".+(\.csv)$");
+        return csvRegex.test(filename);
     }
 
 }
