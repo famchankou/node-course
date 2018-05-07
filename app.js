@@ -1,8 +1,7 @@
 import * as Path from "path";
 import config from "./config";
 import { User, Product } from "./models";
-import { DirWatcher, emitter } from "./dirwatcher";
-import { Importer } from "./importer";
+import { Importer, DirWatcher, emitter } from "./modules";
 
 const DATA_DIR = Path.join(__dirname, "data");
 
