@@ -1,0 +1,8 @@
+name, sku, base_price, images, categories, product_type, in_stock_amount
+Green Snowboard, sku_green_snowboard, 159.99,"/snowboards/snowboard-1.png",Sporting goods=>Snowboards, Product, 10
+Blue Snowboard, sku_blue_snowboard, 159.99,"/snowboards/snowboard-2.png",Sporting goods=>Snowboards, Product, 10
+Green Goalie Mask, sku_green_mask, 59.99,"goalie-mask-green.png",Sporting goods=>Hockey, Product, 10
+White Goalie Mask, sku_white_mask, 59.99,"goalie-mask-white.png",Sporting goods=>Hockey, Product, 10
+Hockey Puck Canada, sku_puck_canada, 5.99,"hockey-puck-canada.png",Sporting goods=>Hockey, Product, 10
+Hockey Puck, sku_puck, 5.00,"hockey-puck.png",Sporting goods=>Hockey, Product, 10
+Hockey Stick, sku_hockey_stick, 59.99,"hockey-stick.png",Sporting goods=>Hockey, Product, 10
