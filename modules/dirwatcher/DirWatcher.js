@@ -3,16 +3,10 @@ import { Importer } from "../importer";
 import * as Path from "path";
 import { readFile, readFileSync, readdir } from "fs";
 
-class DirWatcherEmitter extends EventEmitter {
-    emit(event, value) {
-        super.emit(`dirwatcher:${event}`, value);
-    }
-}
-const emitter = new DirWatcherEmitter();
-
-class DirWatcher {
+export class DirWatcher extends EventEmitter {
 
     constructor(path = null) {
+        super();
         this.cache = {
             fileNames: [],
             bufferData: {},
@@ -35,13 +29,13 @@ class DirWatcher {
                 .then(descriptor => {
                     switch(descriptor.event) {
                         case "init":
-                            emitter.emit("changed", descriptor.changes);
+                            super.emit(`dirwatcher:changed`, descriptor.changes);
                             break;
                         case "fileschange":
-                            emitter.emit("changed", descriptor.changes);
+                            super.emit(`dirwatcher:changed`, descriptor.changes);
                             break;
                         case "contentchange":
-                            emitter.emit("changed", descriptor.changes);
+                            super.emit(`dirwatcher:changed`, descriptor.changes);
                             break;
                         case "nochange":
                             break;
@@ -169,5 +163,3 @@ class DirWatcher {
     }
 
 }
-
-module.exports = { DirWatcher, emitter }

@@ -1,7 +1,7 @@
 import * as Path from "path";
 import config from "./config";
 import { User, Product } from "./models";
-import { Importer, DirWatcher, emitter } from "./modules";
+import { Importer, DirWatcher } from "./modules";
 
 const DATA_DIR = Path.join(__dirname, "data");
 
@@ -13,8 +13,7 @@ const DATA_DIR = Path.join(__dirname, "data");
     let dirWatcher = new DirWatcher();
     
     dirWatcher.watch(DATA_DIR, 3000);
-
-    emitter.on("dirwatcher:changed", value => {
+    dirWatcher.on("dirwatcher:changed", value => {
         importer
             .import(DATA_DIR)
             .then(data => console.log("Data: ", JSON.stringify(data)))
