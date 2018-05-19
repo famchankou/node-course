@@ -1,20 +1,13 @@
 import { EventEmitter } from "events";
-import { Importer } from "../importer";
+import { promisify } from "util";
 import * as Path from "path";
-import { readFile, readFileSync, readdir } from "fs";
+import { readFile, readdir, stat, statSync, Stats } from "fs";
 
 export class DirWatcher extends EventEmitter {
 
     constructor(path = null) {
         super();
-        this.cache = {
-            fileNames: [],
-            bufferData: {},
-            isFirstCheck: true
-        };
-        this.changes = null;
-        this.interval = null;
-        this.path = path;
+        this.initState(path).initAsync();
     }
 
     /**
@@ -23,62 +16,32 @@ export class DirWatcher extends EventEmitter {
      * @param {number} delay 
      */
     watch(path = null, delay = 100) {
-        this.path = path;
-        this.setWatcherInterval(delay, _ => {
-            this.watchDir(path)
-                .then(descriptor => {
-                    switch(descriptor.event) {
-                        case "init":
-                            super.emit(`dirwatcher:changed`, descriptor.changes);
-                            break;
-                        case "fileschange":
-                            super.emit(`dirwatcher:changed`, descriptor.changes);
-                            break;
-                        case "contentchange":
-                            super.emit(`dirwatcher:changed`, descriptor.changes);
-                            break;
-                        case "nochange":
-                            break;
-                        default:
-                            throw new Error("Invalid event type!");
-                    };
-                })
-                .catch(error => console.error(error));
-        });
+        this.cache.path = path;
+        this.setWatcherInterval(delay, _ => this.checkDir(path, _ => super.emit(`dirwatcher:changed`, this.cache)));
+        return this;
     }
 
     /**
-     * Watches for the changes of the specified directory
-     * Returns a Promise with an Object of the event type and mutated filename(s)
+     * Checks for the changes in the specified directory
      * @param {string} path 
+     * @param {Function} onChange 
      */
-    watchDir(path = null) {
-        return new Promise((resolve, reject) => {
-            readdir(path, (error, filenames) => {
-                let _filenames = filenames.filter(filename => Importer._isCSV(filename));
-                if (error) reject(error);
-                
-                if (this.cache.isFirstCheck) {
-                    this.cache.isFirstCheck = false;
-
-                    this.updateCacheData(_filenames, _ => {
-                        resolve({event: "init", changes: this.changes = null});
-                    });
-                } else {
-                    if (this.hasChangedFiles(_filenames)) {
-                        this.updateCacheData(_filenames, _ => {
-                            resolve({event: "fileschange", changes: this.changes});
-                        });
-                    } else if(this.hasChangedContent(_filenames)) {
-                        this.updateCacheData(_filenames, _ => {
-                            resolve({event: "contentchange", changes: this.changes});
-                        });
-                    } else {
-                        resolve({event: "nochange", changes: this.changes = null});
-                    }
+    checkDir(path = null, onChange = _ => void 0) {
+        this.readDirAsync(path).then(files => {
+            let _files = files.filter(filename => DirWatcher._isCSV(filename));
+            if (this.cache.isFirstCheck) {
+                this.cache.isFirstCheck = false;
+                this.updateCacheData(_files, _ => onChange());
+            } else {
+                if (this.hasChangedFiles(_files)) {
+                    this.updateCacheData(_files, _ => onChange());
+                } else if(this.hasChangedContent(_files)) {
+                    this.updateCacheData(_files, _ => onChange());
                 }
-            });
+            }
         });
+
+        return this;
     }
 
     /**
@@ -87,53 +50,33 @@ export class DirWatcher extends EventEmitter {
      * @param {Array<string>} filenames 
      * @param {Function} onComplete 
      */
-    updateCacheData(filenames = [], onComplete = _ => void 0) {
-        this.cache.fileNames = filenames;
-        this.cache.bufferData = {};
-
-        this.cache.fileNames
+    updateCacheData(files = [], onComplete = _ => void 0) {
+        this.cache.files = files;
+        this.cache.statData = {};
+        this.cache.files
             .forEach(filename => {
-                let fileBuffer = readFileSync(Path.join(this.path, filename));
-                this.cache.bufferData[filename] = fileBuffer;
+                let fileStat = statSync(Path.join(this.cache.path, filename));
+                this.cache.statData[filename] = fileStat;
             });
 
         onComplete();
     }
 
     /**
-     * Verfifies if file(s) has(have) been created or removed in specified directory
-     * Returns true if any mutations spotted and false otherwise
-     * @param {Array<string>} filenames 
+     * Compares files Stats object for content changes
+     * Returns true if any file content has been changed and false otherwise
+     * @param {Array<string>} files
      */
-    hasChangedFiles(filenames = []) {
-        let changes = this.cache.fileNames
-            .filter(file => filenames.indexOf(file) < 0)
-            .concat(filenames.filter(file => this.cache.fileNames.indexOf(file) < 0));
-
-        if (changes.length > 0) {
-            this.changes = changes;
-        }
-
-        return changes.length > 0 ? true : false;
-    }
-
-    /**
-     * Compares files buffers for content changes
-     * Returns true if file content has been changed and false otherwise
-     * @param {Array<string>} filenames 
-     */
-    hasChangedContent(filenames = []) {
+    hasChangedContent(files = []) {
         let isContentChanged = false;
 
         try {
-            filenames.forEach(filename => {
-                let fileBuffer = readFileSync(Path.join(this.path, filename));
-                if (!this.cache.bufferData[filename].equals(fileBuffer)) {
-                    this.changes = {[filename]: fileBuffer.toString('utf8')};
-                    throw true;
-                }
-            });
-            isContentChanged = false;
+            files.forEach(filename => {
+                    let fileStat = statSync(Path.join(this.cache.path, filename));
+                    if (this.cache.statData[filename].ctimeMs !== fileStat.ctimeMs) {
+                        throw true;
+                    }
+                });
         } catch (error) {
             isContentChanged = error;
         }
@@ -142,12 +85,25 @@ export class DirWatcher extends EventEmitter {
     }
 
     /**
+     * Verfifies if file(s) has(have) been created or removed in specified directory
+     * Returns true if any mutations spotted and false otherwise
+     * @param {Array<string>} filenames 
+     */
+    hasChangedFiles(filenames = []) {
+        let changes = this.cache.files
+            .filter(file => filenames.indexOf(file) < 0)
+            .concat(filenames.filter(file => this.cache.files.indexOf(file) < 0));
+
+        return changes.length > 0 ? true : false;
+    }
+
+    /**
      * Sets up an interval for watcher
      * @param {number} delay 
      * @param {Function} callback 
      */
     setWatcherInterval(delay = 100, callback) {
-        this.interval = setInterval(_ => callback(), delay);
+        this.cache.interval = setInterval(_ => callback(), delay);
     }
 
     /**
@@ -155,11 +111,56 @@ export class DirWatcher extends EventEmitter {
      * Returns true if timeout flushed and false otherwise
      */
     clearWatcherInterval() {
-        if (this.interval) {
-            clearInterval(this.interval);
+        if (this.cache.interval) {
+            clearInterval(this.cache.interval);
             return true;
         }
         return false;
+    }
+
+    /**
+     * Initialize instance state
+     * @param {string} path 
+     */
+    initState(path = null) {
+        this.cache = {
+            files: [],
+            statData: {},
+            isFirstCheck: true,
+            interval: null,
+            path: path
+        };
+
+        return this;
+    }
+
+    /**
+     * Initialize promises from FS streams
+     */
+    initAsync() {
+        this.pReadFile = promisify(readFile);
+        this.pReadDir = promisify(readdir);
+        this.pStat = promisify(stat);
+
+        return this;
+    }
+
+    /**
+     * Read directory data for the specified path
+     * @param {string} path 
+     */
+    async readDirAsync(path = null) {
+        return await this.pReadDir(path);
+    }
+
+    /**
+     * Verifies if a given file of CSV format
+     * Returns true if CSV and false otherwise
+     * @param {string} filename 
+     */
+    static _isCSV(filename) {
+        let csvRegex = RegExp(".+(\.csv)$");
+        return csvRegex.test(filename);
     }
 
 }
