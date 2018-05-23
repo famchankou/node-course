@@ -1,7 +1,17 @@
 const Repl = require("repl");
+const FS = require("fs");
+const Path = require("path");
 const Colors = require("colors");
 const Minimist = require("minimist");
 const Winston = require("winston");
+const Converter = require("csvtojson").Converter;
+const Request = require("request");
+
+const Through = require("through2");
+const Stream = Through(write, end);
+
+const DATA_DIR = Path.join(__dirname, "..", "data");
+const REMOTE_CONTENT_URL = "https://epa.ms/nodejs18-hw3-css";
 
 class Utils {
     static get commands() {
@@ -17,112 +27,178 @@ class Utils {
         };
     }
 
-    static unknownCommandHandler(arg) {
-        if (!Utils.isSupportedCommand(arg)) {
-            console.log("unknown option", arg);
-            return false;
-        }
-    }
-
     static isSupportedCommand(command) {
         return Utils.commands.includes(command);
+    }
+
+    static isCSS(filename) {
+        let cssRegex = RegExp(".+(\.css)$");
+        return cssRegex.test(filename);
     }
 }
 
 class CommandsParser {
-    constructor(args) {
-        console.log(args);
+    constructor(commands) {
+        this.actions = new Map();
+        this.commands = commands;
     }
 
-    registerAction(actionName = null, handler) {
+    registerAction(actionName = null, handlerObject = null) {
+        if (actionName && handlerObject) {
+            this.actions.set(actionName, handlerObject);
+        }
+    }
 
+    unregisterAction(actionName = null) {
+        if (actionName) {
+            this.actions.delete(actionName);
+        }
+
+    }
+
+    execute() {
+        let config = {
+            actionType: Array.isArray(this.commands.action) ? this.commands.action[0] : this.commands.action,
+            filePath: Array.isArray(this.commands.file) ? this.commands.file[0] : this.commands.file,
+            path: Array.isArray(this.commands.path) ? this.commands.path[0] : this.commands.path,
+            help: Array.isArray(this.commands.help) ? this.commands.help[0] : this.commands.help,
+            extra: this.commands._
+        }
+
+        if (void 0 !== config.help) {
+            this.renderHelpNotification(config);
+            return this;
+        }
+        
+        if (config.actionType && this.actions.has(config.actionType)) {
+            let actionObject = this.actions.get(config.actionType);
+            let param = config[actionObject.paramTypes[0]];
+
+            if (param && "=" !== param) {
+                actionObject.action(param);
+            } else if (config.extra.length) { 
+                actionObject.action(config.extra[0]);
+            } else {
+                console.log(`No such action or param [${config.actionType} ${param}]`);
+            }
+            
+        }
+    }
+
+    renderHelpNotification(config = null) {
+        console.log(`Config help ...`);
     }
 }
 
 const parser = new CommandsParser(
     Minimist(process.argv.slice(2), {
         alias: Utils.aliasObject,
-        unknown: Utils.unknownCommandHandler,
         string: Utils.commands
     }
 ));
 
-parser.registerAction("reverse", reverse);
-parser.registerAction("transform", transform);
-parser.registerAction("outputFile", outputFile);
-parser.registerAction("convertFromFile", convertFromFile);
-parser.registerAction("convertToFile", convertToFile);
-parser.registerAction("cssBundler", cssBundler);
-
-
-// ./streams.js --action=outputFile --file=users.csv 
-// ./streams.js --action=transformToFile --file=users.csv
-// ./streams.js --action=transform textToTransform
-// ./streams.js -a outputFile -f users.csv
-// ./streams.js --help
-// ./streams.js -h
-// ./streams.js --action=cssBundler --path=./assets/css
-// ./streams.js --action=cssBundler -p ./assets/css
-
-// const replServer = Repl.start({
-//     prompt: "REPL::".red,
-//     useColors: true,
-//     ignoreUndefined: true
-// });
-// replServer.context.fs = require("fs");
-
-
+parser.registerAction("reverse", {paramTypes: ["string"], action: reverse});
+parser.registerAction("transform", {paramTypes: ["string"], action: transform});
+parser.registerAction("outputFile", {paramTypes: ["filePath"], action: outputFile});
+parser.registerAction("convertFromFile", {paramTypes: ["filePath"], action: convertFromFile});
+parser.registerAction("convertToFile", {paramTypes: ["filePath"], action: convertToFile});
+parser.registerAction("cssBundler", {paramTypes: ["path"], action: cssBundler});
+parser.execute();
 
 //////////////////////////////////////////////////////////
 ////////////////////// Actions ///////////////////////////
 //////////////////////////////////////////////////////////
 
 function reverse (str) {
-    console.log("reverse", str);
+    const reverse = str => str.split``.reverse().join``;
+
+    const Readline = require("readline");
+    const RLStream = Readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+        terminal: false
+    });
+
+
+    console.log(reverse(str));
+    RLStream.on("line", str => {
+        console.log(reverse(str));
+    })
 };
 
 function transform (str) {
-    console.log("transform", str);
+    
 };
 
 function outputFile (filePath) {
-    console.log("outputFile", filePath);
+    let file = Path.join(DATA_DIR, filePath);
+    
+    let fd = FS.openSync(file, "r");
+    let readStream = FS.createReadStream(null, {fd: fd});
+    readStream.pipe(process.stdout);
 };
 
 function convertFromFile (filePath) {
-    console.log("convertFromFile", filePath);
+    let file = Path.join(DATA_DIR, filePath);
+
+    let csvConverter = new Converter({constructResult: false, toArrayString: true});
+    let readStream = FS.createReadStream(file);
+    readStream.pipe(csvConverter).pipe(process.stdout);
 };
 
 function convertToFile (filePath) {
-    console.log("convertToFile", filePath);
+    let file = Path.join(DATA_DIR, filePath);
+    let filename = file.split("/").pop();
+
+    let csvConverter = new Converter({constructResult: false, toArrayString: true});
+    let readStream = FS.createReadStream(file); 
+    let writeStream = FS.createWriteStream(
+        Path.join(DATA_DIR, `${filename.substr(0, filename.lastIndexOf("."))}.json`)
+    );
+    
+    readStream
+        .pipe(csvConverter)
+        .pipe(writeStream);
 };
 
 function cssBundler (path) {
-    console.log("cssBundler", path);
-}
+    let dirname = Path.join(DATA_DIR, path);
+    let readStreams = [];
+    let targetFileName = "bundle.css";
 
+    FS.readdir(dirname, (error, filenames) => {
+        if (!error) {
+            filenames
+                .filter(filename => Utils.isCSS(filename))
+                .forEach(filename => {
+                    let readStream = FS.createReadStream(Path.join(dirname, filename));
+                    readStream.on("error", _ => console.log("Read Stream error..."));
+                    readStreams.push(readStream);
+                });
 
-class Logger {
-    // const logger = Winston.createLogger({
-    //     level: 'info',
-    //     format: Winston.format.json(),
-    //     transports: [
-    //         //
-    //         // - Write to all logs with level `info` and below to `combined.log` 
-    //         // - Write all logs error (and below) to `error.log`.
-    //         //
-    //         new Winston.transports.File({ filename: 'error.log', level: 'error' }),
-    //         new Winston.transports.File({ filename: 'combined.log' })
-    //     ]
-    // });
-    
-    //
-    // If we're not in production then log to the `console` with the format:
-    // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-    // 
-    // if (process.env.NODE_ENV !== 'production') {
-    //     logger.add(new Winston.transports.Console({
-    //         format: Winston.format.simple()
-    //     }));
-    // }
-    }
+            let writeStream = FS.createWriteStream(Path.join(dirname, targetFileName));
+            writeStream.on("error", _ => console.log("Write Stream error..."));
+
+            let stream = Request(REMOTE_CONTENT_URL);
+            stream.pipe(FS.createWriteStream(Path.join(dirname, "remote.css")));
+            // const write = stream.pipe(fs.createWriteStream(path))
+
+            // readStreams.forEach(readStream => {
+            //     readStream.on("end", function () {
+            //         next2();
+            //     });
+            //     readStream.pipe(writeStream, {end: false});
+            // });
+        }
+    });
+
+};
+
+function write (buffer, encoding, next) {
+    this.push("Data: " + buffer + "\n");
+    next();
+};
+
+function end (done) {
+    done();
+};
