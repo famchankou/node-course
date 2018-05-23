@@ -6,6 +6,7 @@ const Minimist = require("minimist");
 const Winston = require("winston");
 const Converter = require("csvtojson").Converter;
 const Request = require("request");
+const Readline = require("readline");
 
 const Through = require("through2");
 const TRStream = Through(write, end);
@@ -98,7 +99,20 @@ class CommandsParser {
     }
 
     renderHelpNotification(config = null) {
-        console.log(`Config help ...`);
+        console.log(
+            `Supported commands:`.red + `\n` +
+            `\t\t./streams.js --action=convertFromFile --file=users.csv
+            \t./streams.js --action=convertToFile --file=users.csv
+            \t./streams.js --action=outputFile --file=users.csv
+            \t./streams.js --action=transform 'stringToTransform'
+            \t./streams.js --action=reverse 'stringToReverse'
+            \t./streams.js --action=cssBundler --path=./assets/css
+            \t./streams.js --action=cssBundler -p ./assets/css
+            \t./streams.js -a outputFile -f users.csv
+            \t./streams.js --help
+            \t./streams.js -h
+            `.yellow
+        );
     }
 }
 
@@ -123,14 +137,11 @@ parser.registerAction("reverse", {paramTypes: ["string"], action: reverse})
 
 function reverse (str) {
     const reverse = str => str.split``.reverse().join``;
-
-    const Readline = require("readline");
     const RLStream = Readline.createInterface({
         input: process.stdin,
         output: process.stdout,
         terminal: false
     });
-
 
     console.log(reverse(str));
     RLStream.on("line", str => {
