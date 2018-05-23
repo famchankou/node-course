@@ -47,6 +47,8 @@ class CommandsParser {
         if (actionName && handlerObject) {
             this.actions.set(actionName, handlerObject);
         }
+
+        return this;
     }
 
     unregisterAction(actionName = null) {
@@ -54,6 +56,7 @@ class CommandsParser {
             this.actions.delete(actionName);
         }
 
+        return this;
     }
 
     execute() {
@@ -97,13 +100,13 @@ const parser = new CommandsParser(
     }
 ));
 
-parser.registerAction("reverse", {paramTypes: ["string"], action: reverse});
-parser.registerAction("transform", {paramTypes: ["string"], action: transform});
-parser.registerAction("outputFile", {paramTypes: ["filePath"], action: outputFile});
-parser.registerAction("convertFromFile", {paramTypes: ["filePath"], action: convertFromFile});
-parser.registerAction("convertToFile", {paramTypes: ["filePath"], action: convertToFile});
-parser.registerAction("cssBundler", {paramTypes: ["path"], action: cssBundler});
-parser.execute();
+parser.registerAction("reverse", {paramTypes: ["string"], action: reverse})
+    .registerAction("transform", {paramTypes: ["string"], action: transform})
+    .registerAction("outputFile", {paramTypes: ["filePath"], action: outputFile})
+    .registerAction("convertFromFile", {paramTypes: ["filePath"], action: convertFromFile})
+    .registerAction("convertToFile", {paramTypes: ["filePath"], action: convertToFile})
+    .registerAction("cssBundler", {paramTypes: ["path"], action: cssBundler})
+    .execute();
 
 //////////////////////////////////////////////////////////
 ////////////////////// Actions ///////////////////////////
@@ -179,8 +182,12 @@ function cssBundler (path) {
             let writeStream = FS.createWriteStream(Path.join(dirname, targetFileName));
             writeStream.on("error", _ => console.log("Write Stream error..."));
 
-            let stream = Request(REMOTE_CONTENT_URL);
-            stream.pipe(FS.createWriteStream(Path.join(dirname, "remote.css")));
+            readStreams.forEach(stream => {
+                stream.pipe(writeStream, {end: false});
+            });
+
+            // let stream = Request(REMOTE_CONTENT_URL);
+            // stream.pipe(FS.createWriteStream(Path.join(dirname, "remote.css")));
             // const write = stream.pipe(fs.createWriteStream(path))
 
             // readStreams.forEach(readStream => {
