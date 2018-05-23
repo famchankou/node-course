@@ -8,7 +8,16 @@ const Converter = require("csvtojson").Converter;
 const Request = require("request");
 
 const Through = require("through2");
-const Stream = Through(write, end);
+const TRStream = Through(write, end);
+
+function write (buffer, encoding, next) {
+    this.push(buffer.toString().toUpperCase()); 
+    next();
+};
+
+function end (done) {
+    done();
+};
 
 const DATA_DIR = Path.join(__dirname, "..", "data");
 const REMOTE_CONTENT_URL = "https://epa.ms/nodejs18-hw3-css";
@@ -130,7 +139,7 @@ function reverse (str) {
 };
 
 function transform (str) {
-    
+    process.stdin.pipe(TRStream).pipe(process.stdout);
 };
 
 function outputFile (filePath) {
@@ -199,13 +208,4 @@ function cssBundler (path) {
         }
     });
 
-};
-
-function write (buffer, encoding, next) {
-    this.push("Data: " + buffer + "\n");
-    next();
-};
-
-function end (done) {
-    done();
 };
