@@ -2,8 +2,10 @@ const FS = require("fs");
 const Path = require("path");
 const Colors = require("colors");
 const Minimist = require("minimist");
-const Winston = require("winston");
 const Converter = require("csvtojson").Converter;
+
+const { createLogger, format, transports } = require('winston');
+const { combine, timestamp, label, printf } = format;
 
 const Through = require("through2");
 const TRStream = Through(write, end);
@@ -14,6 +16,16 @@ const inArguments = process.argv.slice(2);
 stdin.setEncoding("utf8");
 
 const DATA_DIR = Path.join(__dirname, "..", "data");
+
+const formatLog = printf(info => `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`);
+const logger = createLogger({
+    format: combine(
+        label({ label: 'Stream.js' }),
+        timestamp(),
+        formatLog
+    ),
+    transports: [new transports.Console()]
+});
 
 class Utils {
     static get commands() {
@@ -39,28 +51,28 @@ class Utils {
     }
 
     static renderHelpNotification(message = null) {
-        if (message) console.log(`\t\t` + message);
-        console.log(
-            `\t\tSupported commands and examples:`.blue + `\n` +
-            `\t\t./streams.js --action=convertFromFile --file=users.csv
-            \t./streams.js --action=convertToFile --file=users.csv
-            \t./streams.js --action=outputFile --file=users.csv
-            \t./streams.js --action=transform 'stringToTransform'
-            \t./streams.js --action=reverse 'stringToReverse'
-            \t./streams.js --action=cssBundler --path=./assets/css
-            \t./streams.js --action=cssBundler -p ./assets/css
-            \t./streams.js -a outputFile -f users.csv
-            \t./streams.js --help
-            \t./streams.js -h
-            `.grey,
-            `\tShort commands examples:`.blue + `\n` +
-            `\t\t./streams.js -a convertFromFile -file users.csv
-            \t./streams.js -action convertToFile -file users.csv
-            \t./streams.js -action outputFile -file users.csv
-            \t./streams.js -action transform 'stringToTransform'
-            \t./streams.js -action reverse 'stringToReverse'
-            \t./streams.js -action cssBundler -path ./assets/css
-            \t./streams.js -action cssBundler -p ./assets/css`.grey
+        if (message) logger.error(message);
+        logger.info(
+        `Supported commands and examples:`.blue + `\n` +
+        `\t./streams.js --action=convertFromFile --file=users.csv
+        ./streams.js --action=convertToFile --file=users.csv
+        ./streams.js --action=outputFile --file=users.csv
+        ./streams.js --action=transform 'stringToTransform'
+        ./streams.js --action=reverse 'stringToReverse'
+        ./streams.js --action=cssBundler --path=./assets/css
+        ./streams.js --action=cssBundler -p ./assets/css
+        ./streams.js -a outputFile -f users.csv
+        ./streams.js --help
+        ./streams.js -h
+        `.grey +
+        `Short commands examples:`.blue + `\n` +
+        `\t./streams.js -a convertFromFile -file users.csv
+        ./streams.js -action convertToFile -file users.csv
+        ./streams.js -action outputFile -file users.csv
+        ./streams.js -action transform 'stringToTransform'
+        ./streams.js -action reverse 'stringToReverse'
+        ./streams.js -action cssBundler -path ./assets/css
+        ./streams.js -action cssBundler -p ./assets/css`.grey
         );
     }
 }
@@ -245,13 +257,13 @@ function cssBundler (path = null) {
                     .forEach(filename => {
                         if (filename !== targetFileName) {
                             let readStream = FS.createReadStream(Path.join(dirname, filename));
-                            readStream.on("error", _ => console.log("Read Stream error..."));
+                            readStream.on("error", _ => logger.error("Read Stream error..."));
                             readStreams.push(readStream);
                         }
                     });
 
                 let writeStream = FS.createWriteStream(Path.join(dirname, targetFileName));
-                writeStream.on("error", _ => console.log("Write Stream error..."));
+                writeStream.on("error", _ => logger.error("Write Stream error..."));
 
                 readStreams.forEach(stream => {
                     stream.pipe(writeStream, {end: false});
