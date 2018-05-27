@@ -64,8 +64,8 @@ class Utils {
         ./streams.js -a outputFile -f users.csv
         ./streams.js --help
         ./streams.js -h
-        `.grey +
-        `Short commands examples:`.blue + `\n` +
+        `.grey);
+        logger.info(`Short commands examples:`.blue + `\n` +
         `\t./streams.js -a convertFromFile -file users.csv
         ./streams.js -action convertToFile -file users.csv
         ./streams.js -action outputFile -file users.csv
