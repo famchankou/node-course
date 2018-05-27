@@ -1,9 +1,9 @@
 /**
  * @define utilities
- * Size: breakpoint 1 (small)
+ * Size: breakpoint 3 (large)
  */
 
- @media (--sm-viewport) {
+ @media (--lg-viewport) {
 
     /* Applies to flex container
        ======================================================================== */
@@ -12,11 +12,11 @@
      * Container
      */
   
-    .u-sm-flex {
+    .u-lg-flex {
       display: flex !important;
     }
   
-    .u-sm-flexInline {
+    .u-lg-flexInline {
       display: inline-flex !important;
     }
   
@@ -24,11 +24,11 @@
      * Direction: row
      */
   
-    .u-sm-flexRow {
+    .u-lg-flexRow {
       flex-direction: row !important;
     }
   
-    .u-sm-flexRowReverse {
+    .u-lg-flexRowReverse {
       flex-direction: row-reverse !important;
     }
   
@@ -36,11 +36,11 @@
      * Direction: column
      */
   
-    .u-sm-flexCol {
+    .u-lg-flexCol {
       flex-direction: column !important;
     }
   
-    .u-sm-flexColReverse {
+    .u-lg-flexColReverse {
       flex-direction: column-reverse !important;
     }
   
@@ -48,15 +48,15 @@
      * Wrap
      */
   
-    .u-sm-flexWrap {
+    .u-lg-flexWrap {
       flex-wrap: wrap !important;
     }
   
-    .u-sm-flexNoWrap {
+    .u-lg-flexNoWrap {
       flex-wrap: nowrap !important;
     }
   
-    .u-sm-flexWrapReverse {
+    .u-lg-flexWrapReverse {
       flex-wrap: wrap-reverse !important;
     }
   
@@ -64,23 +64,23 @@
      * Align items along the main axis of the current line of the flex container
      */
   
-    .u-sm-flexJustifyStart {
+    .u-lg-flexJustifyStart {
       justify-content: flex-start !important;
     }
   
-    .u-sm-flexJustifyEnd {
+    .u-lg-flexJustifyEnd {
       justify-content: flex-end !important;
     }
   
-    .u-sm-flexJustifyCenter {
+    .u-lg-flexJustifyCenter {
       justify-content: center !important;
     }
   
-    .u-sm-flexJustifyBetween {
+    .u-lg-flexJustifyBetween {
       justify-content: space-between !important;
     }
   
-    .u-sm-flexJustifyAround {
+    .u-lg-flexJustifyAround {
       justify-content: space-around !important;
     }
   
@@ -89,23 +89,23 @@
      * Similar to `justify-content` but in the perpendicular direction
      */
   
-    .u-sm-flexAlignItemsStart {
+    .u-lg-flexAlignItemsStart {
       align-items: flex-start !important;
     }
   
-    .u-sm-flexAlignItemsEnd {
+    .u-lg-flexAlignItemsEnd {
       align-items: flex-end !important;
     }
   
-    .u-sm-flexAlignItemsCenter {
+    .u-lg-flexAlignItemsCenter {
       align-items: center !important;
     }
   
-    .u-sm-flexAlignItemsStretch {
+    .u-lg-flexAlignItemsStretch {
       align-items: stretch !important;
     }
   
-    .u-sm-flexAlignItemsBaseline {
+    .u-lg-flexAlignItemsBaseline {
       align-items: baseline !important;
     }
   
@@ -116,27 +116,27 @@
      * Has no effect when there is only one line of flex items.
      */
   
-    .u-sm-flexAlignContentStart {
+    .u-lg-flexAlignContentStart {
       align-content: flex-start !important;
     }
   
-    .u-sm-flexAlignContentEnd {
+    .u-lg-flexAlignContentEnd {
       align-content: flex-end !important;
     }
   
-    .u-sm-flexAlignContentCenter {
+    .u-lg-flexAlignContentCenter {
       align-content: center !important;
     }
   
-    .u-sm-flexAlignContentStretch {
+    .u-lg-flexAlignContentStretch {
       align-content: stretch !important;
     }
   
-    .u-sm-flexAlignContentBetween {
+    .u-lg-flexAlignContentBetween {
       align-content: space-between !important;
     }
   
-    .u-sm-flexAlignContentAround {
+    .u-lg-flexAlignContentAround {
       align-content: space-around !important;
     }
   
@@ -147,27 +147,27 @@
      * Override default alignment of single item when specified by `align-items`
      */
   
-    .u-sm-flexAlignSelfStart {
+    .u-lg-flexAlignSelfStart {
       align-self: flex-start !important;
     }
   
-    .u-sm-flexAlignSelfEnd {
+    .u-lg-flexAlignSelfEnd {
       align-self: flex-end !important;
     }
   
-    .u-sm-flexAlignSelfCenter {
+    .u-lg-flexAlignSelfCenter {
       align-self: center !important;
     }
   
-    .u-sm-flexAlignSelfStretch {
+    .u-lg-flexAlignSelfStretch {
       align-self: stretch !important;
     }
   
-    .u-sm-flexAlignSelfBaseline {
+    .u-lg-flexAlignSelfBaseline {
       align-self: baseline !important;
     }
   
-    .u-sm-flexAlignSelfAuto {
+    .u-lg-flexAlignSelfAuto {
       align-self: auto !important;
     }
   
@@ -175,15 +175,15 @@
      * Change order without editing underlying HTML
      */
   
-    .u-sm-flexOrderFirst {
+    .u-lg-flexOrderFirst {
       order: -1 !important;
     }
   
-    .u-sm-flexOrderLast {
+    .u-lg-flexOrderLast {
       order: 1 !important;
     }
   
-    .u-sm-flexOrderNone {
+    .u-lg-flexOrderNone {
       order: 0 !important;
     }
   
@@ -200,23 +200,23 @@
      *    http://git.io/vllWx
      */
   
-    .u-sm-flexGrow1 {
+    .u-lg-flexGrow1 {
       flex: 1 1 0% !important; /* 1 */
     }
   
-    .u-sm-flexGrow2 {
+    .u-lg-flexGrow2 {
       flex: 2 1 0% !important;
     }
   
-    .u-sm-flexGrow3 {
+    .u-lg-flexGrow3 {
       flex: 3 1 0% !important;
     }
   
-    .u-sm-flexGrow4 {
+    .u-lg-flexGrow4 {
       flex: 4 1 0% !important;
     }
   
-    .u-sm-flexGrow5 {
+    .u-lg-flexGrow5 {
       flex: 5 1 0% !important;
     }
   
@@ -225,27 +225,27 @@
      * will shrink relative to the rest of the flex items in the flex container.
      */
   
-    .u-sm-flexShrink0 {
+    .u-lg-flexShrink0 {
       flex-shrink: 0 !important;
     }
   
-    .u-sm-flexShrink1 {
+    .u-lg-flexShrink1 {
       flex-shrink: 1 !important;
     }
   
-    .u-sm-flexShrink2 {
+    .u-lg-flexShrink2 {
       flex-shrink: 2 !important;
     }
   
-    .u-sm-flexShrink3 {
+    .u-lg-flexShrink3 {
       flex-shrink: 3 !important;
     }
   
-    .u-sm-flexShrink4 {
+    .u-lg-flexShrink4 {
       flex-shrink: 4 !important;
     }
   
-    .u-sm-flexShrink5 {
+    .u-lg-flexShrink5 {
       flex-shrink: 5 !important;
     }
   
@@ -254,23 +254,23 @@
      * http://www.w3.org/TR/css-flexbox-1/#auto-margins
      */
   
-    .u-sm-flexExpand {
+    .u-lg-flexExpand {
       margin: auto !important;
     }
   
-    .u-sm-flexExpandLeft {
+    .u-lg-flexExpandLeft {
       margin-left: auto !important;
     }
   
-    .u-sm-flexExpandRight {
+    .u-lg-flexExpandRight {
       margin-right: auto !important;
     }
   
-    .u-sm-flexExpandTop {
+    .u-lg-flexExpandTop {
       margin-top: auto !important;
     }
   
-    .u-sm-flexExpandBottom {
+    .u-lg-flexExpandBottom {
       margin-bottom: auto !important;
     }
   
@@ -278,11 +278,11 @@
      * Basis
      */
   
-    .u-sm-flexBasisAuto {
+    .u-lg-flexBasisAuto {
       flex-basis: auto !important;
     }
   
-    .u-sm-flexBasis0 {
+    .u-lg-flexBasis0 {
       flex-basis: 0 !important;
     }
   
@@ -300,7 +300,7 @@
      * Sizes the item based on the width/height properties
      */
   
-    .u-sm-flexInitial {
+    .u-lg-flexInitial {
       flex: 0 1 auto !important;
       flex-basis: auto !important; /* 1 */
     }
@@ -310,7 +310,7 @@
      * flexible, so that they absorb any free space along the main axis.
      */
   
-    .u-sm-flexAuto {
+    .u-lg-flexAuto {
       flex: 1 1 auto !important;
       flex-basis: auto !important; /* 1 */
     }
@@ -321,7 +321,7 @@
      * not allowed to shrink, even in overflow situations.
      */
   
-    .u-sm-flexNone {
+    .u-lg-flexNone {
       flex: 0 0 auto !important;
       flex-basis: auto !important; /* 1 */
     }
@@ -658,10 +658,10 @@
   }
 /**
  * @define utilities
- * Size: breakpoint 3 (large)
+ * Size: breakpoint 1 (small)
  */
 
- @media (--lg-viewport) {
+ @media (--sm-viewport) {
 
     /* Applies to flex container
        ======================================================================== */
@@ -670,11 +670,11 @@
      * Container
      */
   
-    .u-lg-flex {
+    .u-sm-flex {
       display: flex !important;
     }
   
-    .u-lg-flexInline {
+    .u-sm-flexInline {
       display: inline-flex !important;
     }
   
@@ -682,11 +682,11 @@
      * Direction: row
      */
   
-    .u-lg-flexRow {
+    .u-sm-flexRow {
       flex-direction: row !important;
     }
   
-    .u-lg-flexRowReverse {
+    .u-sm-flexRowReverse {
       flex-direction: row-reverse !important;
     }
   
@@ -694,11 +694,11 @@
      * Direction: column
      */
   
-    .u-lg-flexCol {
+    .u-sm-flexCol {
       flex-direction: column !important;
     }
   
-    .u-lg-flexColReverse {
+    .u-sm-flexColReverse {
       flex-direction: column-reverse !important;
     }
   
@@ -706,15 +706,15 @@
      * Wrap
      */
   
-    .u-lg-flexWrap {
+    .u-sm-flexWrap {
       flex-wrap: wrap !important;
     }
   
-    .u-lg-flexNoWrap {
+    .u-sm-flexNoWrap {
       flex-wrap: nowrap !important;
     }
   
-    .u-lg-flexWrapReverse {
+    .u-sm-flexWrapReverse {
       flex-wrap: wrap-reverse !important;
     }
   
@@ -722,23 +722,23 @@
      * Align items along the main axis of the current line of the flex container
      */
   
-    .u-lg-flexJustifyStart {
+    .u-sm-flexJustifyStart {
       justify-content: flex-start !important;
     }
   
-    .u-lg-flexJustifyEnd {
+    .u-sm-flexJustifyEnd {
       justify-content: flex-end !important;
     }
   
-    .u-lg-flexJustifyCenter {
+    .u-sm-flexJustifyCenter {
       justify-content: center !important;
     }
   
-    .u-lg-flexJustifyBetween {
+    .u-sm-flexJustifyBetween {
       justify-content: space-between !important;
     }
   
-    .u-lg-flexJustifyAround {
+    .u-sm-flexJustifyAround {
       justify-content: space-around !important;
     }
   
@@ -747,23 +747,23 @@
      * Similar to `justify-content` but in the perpendicular direction
      */
   
-    .u-lg-flexAlignItemsStart {
+    .u-sm-flexAlignItemsStart {
       align-items: flex-start !important;
     }
   
-    .u-lg-flexAlignItemsEnd {
+    .u-sm-flexAlignItemsEnd {
       align-items: flex-end !important;
     }
   
-    .u-lg-flexAlignItemsCenter {
+    .u-sm-flexAlignItemsCenter {
       align-items: center !important;
     }
   
-    .u-lg-flexAlignItemsStretch {
+    .u-sm-flexAlignItemsStretch {
       align-items: stretch !important;
     }
   
-    .u-lg-flexAlignItemsBaseline {
+    .u-sm-flexAlignItemsBaseline {
       align-items: baseline !important;
     }
   
@@ -774,27 +774,27 @@
      * Has no effect when there is only one line of flex items.
      */
   
-    .u-lg-flexAlignContentStart {
+    .u-sm-flexAlignContentStart {
       align-content: flex-start !important;
     }
   
-    .u-lg-flexAlignContentEnd {
+    .u-sm-flexAlignContentEnd {
       align-content: flex-end !important;
     }
   
-    .u-lg-flexAlignContentCenter {
+    .u-sm-flexAlignContentCenter {
       align-content: center !important;
     }
   
-    .u-lg-flexAlignContentStretch {
+    .u-sm-flexAlignContentStretch {
       align-content: stretch !important;
     }
   
-    .u-lg-flexAlignContentBetween {
+    .u-sm-flexAlignContentBetween {
       align-content: space-between !important;
     }
   
-    .u-lg-flexAlignContentAround {
+    .u-sm-flexAlignContentAround {
       align-content: space-around !important;
     }
   
@@ -805,27 +805,27 @@
      * Override default alignment of single item when specified by `align-items`
      */
   
-    .u-lg-flexAlignSelfStart {
+    .u-sm-flexAlignSelfStart {
       align-self: flex-start !important;
     }
   
-    .u-lg-flexAlignSelfEnd {
+    .u-sm-flexAlignSelfEnd {
       align-self: flex-end !important;
     }
   
-    .u-lg-flexAlignSelfCenter {
+    .u-sm-flexAlignSelfCenter {
       align-self: center !important;
     }
   
-    .u-lg-flexAlignSelfStretch {
+    .u-sm-flexAlignSelfStretch {
       align-self: stretch !important;
     }
   
-    .u-lg-flexAlignSelfBaseline {
+    .u-sm-flexAlignSelfBaseline {
       align-self: baseline !important;
     }
   
-    .u-lg-flexAlignSelfAuto {
+    .u-sm-flexAlignSelfAuto {
       align-self: auto !important;
     }
   
@@ -833,15 +833,15 @@
      * Change order without editing underlying HTML
      */
   
-    .u-lg-flexOrderFirst {
+    .u-sm-flexOrderFirst {
       order: -1 !important;
     }
   
-    .u-lg-flexOrderLast {
+    .u-sm-flexOrderLast {
       order: 1 !important;
     }
   
-    .u-lg-flexOrderNone {
+    .u-sm-flexOrderNone {
       order: 0 !important;
     }
   
@@ -858,23 +858,23 @@
      *    http://git.io/vllWx
      */
   
-    .u-lg-flexGrow1 {
+    .u-sm-flexGrow1 {
       flex: 1 1 0% !important; /* 1 */
     }
   
-    .u-lg-flexGrow2 {
+    .u-sm-flexGrow2 {
       flex: 2 1 0% !important;
     }
   
-    .u-lg-flexGrow3 {
+    .u-sm-flexGrow3 {
       flex: 3 1 0% !important;
     }
   
-    .u-lg-flexGrow4 {
+    .u-sm-flexGrow4 {
       flex: 4 1 0% !important;
     }
   
-    .u-lg-flexGrow5 {
+    .u-sm-flexGrow5 {
       flex: 5 1 0% !important;
     }
   
@@ -883,27 +883,27 @@
      * will shrink relative to the rest of the flex items in the flex container.
      */
   
-    .u-lg-flexShrink0 {
+    .u-sm-flexShrink0 {
       flex-shrink: 0 !important;
     }
   
-    .u-lg-flexShrink1 {
+    .u-sm-flexShrink1 {
       flex-shrink: 1 !important;
     }
   
-    .u-lg-flexShrink2 {
+    .u-sm-flexShrink2 {
       flex-shrink: 2 !important;
     }
   
-    .u-lg-flexShrink3 {
+    .u-sm-flexShrink3 {
       flex-shrink: 3 !important;
     }
   
-    .u-lg-flexShrink4 {
+    .u-sm-flexShrink4 {
       flex-shrink: 4 !important;
     }
   
-    .u-lg-flexShrink5 {
+    .u-sm-flexShrink5 {
       flex-shrink: 5 !important;
     }
   
@@ -912,23 +912,23 @@
      * http://www.w3.org/TR/css-flexbox-1/#auto-margins
      */
   
-    .u-lg-flexExpand {
+    .u-sm-flexExpand {
       margin: auto !important;
     }
   
-    .u-lg-flexExpandLeft {
+    .u-sm-flexExpandLeft {
       margin-left: auto !important;
     }
   
-    .u-lg-flexExpandRight {
+    .u-sm-flexExpandRight {
       margin-right: auto !important;
     }
   
-    .u-lg-flexExpandTop {
+    .u-sm-flexExpandTop {
       margin-top: auto !important;
     }
   
-    .u-lg-flexExpandBottom {
+    .u-sm-flexExpandBottom {
       margin-bottom: auto !important;
     }
   
@@ -936,11 +936,11 @@
      * Basis
      */
   
-    .u-lg-flexBasisAuto {
+    .u-sm-flexBasisAuto {
       flex-basis: auto !important;
     }
   
-    .u-lg-flexBasis0 {
+    .u-sm-flexBasis0 {
       flex-basis: 0 !important;
     }
   
@@ -958,7 +958,7 @@
      * Sizes the item based on the width/height properties
      */
   
-    .u-lg-flexInitial {
+    .u-sm-flexInitial {
       flex: 0 1 auto !important;
       flex-basis: auto !important; /* 1 */
     }
@@ -968,7 +968,7 @@
      * flexible, so that they absorb any free space along the main axis.
      */
   
-    .u-lg-flexAuto {
+    .u-sm-flexAuto {
       flex: 1 1 auto !important;
       flex-basis: auto !important; /* 1 */
     }
@@ -979,7 +979,7 @@
      * not allowed to shrink, even in overflow situations.
      */
   
-    .u-lg-flexNone {
+    .u-sm-flexNone {
       flex: 0 0 auto !important;
       flex-basis: auto !important; /* 1 */
     }
@@ -1308,6 +1308,21 @@
     flex: 0 0 auto !important;
     flex-basis: auto !important; /* 1 */
   }
+.ngmp18 {
+    background-color: #fff;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.ngmp18__hw3 {
+    color: #333;
+}
+
+.ngmp18__hw3--t7 {
+    font-weight: bold;
+}
  
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,

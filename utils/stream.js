@@ -1,27 +1,19 @@
-const Repl = require("repl");
 const FS = require("fs");
 const Path = require("path");
 const Colors = require("colors");
 const Minimist = require("minimist");
 const Winston = require("winston");
 const Converter = require("csvtojson").Converter;
-const Request = require("request");
-const Readline = require("readline");
 
 const Through = require("through2");
 const TRStream = Through(write, end);
 
-function write (buffer, encoding, next) {
-    this.push(buffer.toString().toUpperCase()); 
-    next();
-};
-
-function end (done) {
-    done();
-};
+const stdin = process.stdin;
+const stdout = process.stdout;
+const inArguments = process.argv.slice(2);
+stdin.setEncoding("utf8");
 
 const DATA_DIR = Path.join(__dirname, "..", "data");
-const REMOTE_CONTENT_URL = "https://epa.ms/nodejs18-hw3-css";
 
 class Utils {
     static get commands() {
@@ -44,6 +36,32 @@ class Utils {
     static isCSS(filename) {
         let cssRegex = RegExp(".+(\.css)$");
         return cssRegex.test(filename);
+    }
+
+    static renderHelpNotification(message = null) {
+        if (message) console.log(`\t\t` + message);
+        console.log(
+            `\t\tSupported commands and examples:`.blue + `\n` +
+            `\t\t./streams.js --action=convertFromFile --file=users.csv
+            \t./streams.js --action=convertToFile --file=users.csv
+            \t./streams.js --action=outputFile --file=users.csv
+            \t./streams.js --action=transform 'stringToTransform'
+            \t./streams.js --action=reverse 'stringToReverse'
+            \t./streams.js --action=cssBundler --path=./assets/css
+            \t./streams.js --action=cssBundler -p ./assets/css
+            \t./streams.js -a outputFile -f users.csv
+            \t./streams.js --help
+            \t./streams.js -h
+            `.grey,
+            `\tShort commands examples:`.blue + `\n` +
+            `\t\t./streams.js -a convertFromFile -file users.csv
+            \t./streams.js -action convertToFile -file users.csv
+            \t./streams.js -action outputFile -file users.csv
+            \t./streams.js -action transform 'stringToTransform'
+            \t./streams.js -action reverse 'stringToReverse'
+            \t./streams.js -action cssBundler -path ./assets/css
+            \t./streams.js -action cssBundler -p ./assets/css`.grey
+        );
     }
 }
 
@@ -78,8 +96,13 @@ class CommandsParser {
             extra: this.commands._
         }
 
-        if (void 0 !== config.help) {
-            this.renderHelpNotification(config);
+        if (this.isCommandsLineEmpty()) {
+            Utils.renderHelpNotification(`Wrong input! Please, use the commands below:`.red);
+            return this;
+        }
+
+        if (void 0 !== config.help && this.isHelpFirst()) {
+            Utils.renderHelpNotification();
             return this;
         }
         
@@ -87,136 +110,196 @@ class CommandsParser {
             let actionObject = this.actions.get(config.actionType);
             let param = config[actionObject.paramTypes[0]];
 
-            if (param && "=" !== param) {
+            if (param) {
                 actionObject.action(param);
-            } else if (config.extra.length) { 
-                actionObject.action(config.extra[0]);
             } else {
-                console.log(`No such action or param [${config.actionType} ${param}]`);
+                actionObject.action(config.extra[0]);
             }
             
+        } else {
+            Utils.renderHelpNotification(`No such action type: [${config.actionType}]`.red);
         }
     }
 
-    renderHelpNotification(config = null) {
-        console.log(
-            `Supported commands:`.red + `\n` +
-            `\t\t./streams.js --action=convertFromFile --file=users.csv
-            \t./streams.js --action=convertToFile --file=users.csv
-            \t./streams.js --action=outputFile --file=users.csv
-            \t./streams.js --action=transform 'stringToTransform'
-            \t./streams.js --action=reverse 'stringToReverse'
-            \t./streams.js --action=cssBundler --path=./assets/css
-            \t./streams.js --action=cssBundler -p ./assets/css
-            \t./streams.js -a outputFile -f users.csv
-            \t./streams.js --help
-            \t./streams.js -h
-            `.yellow
-        );
+    isHelpFirst() {
+        let args = inArguments;
+        let regexp = /^(-h|-help|--help)/i;
+        let parsedChunks = args.join().match(regexp);
+
+        return parsedChunks &&
+            (parsedChunks[0] === "-h" || parsedChunks[0] === "--help");
+    }
+
+    isCommandsLineEmpty() {
+        let args = inArguments;
+        return 0 === args.length ? true : false;
     }
 }
 
+/**
+ * An action to read a string via stdin and output reversed string to stdout
+ * @param {string} str 
+ */
+function reverse (str = null) {
+    const reverse = str => str.split``.reverse().join``;
+    stdin.resume();
+
+    try {
+        if (str && str.length) {
+            stdout.write(`Reversed: ${reverse(str)} \n`);
+        }
+
+        stdin.on("data", str => {
+            stdout.write(`Reversed: ${reverse(str)} \n`);
+        });
+    } catch (e) {
+        Utils.renderHelpNotification(`An error occurred while reading the stream data [${e}]`.red);
+    }
+};
+
+/**
+ * An action to read a string via stdin and output capitalised string to stdout
+ * @param {string} str 
+ */
+function transform (str = null) {
+    try {
+        if (str && str.length) {
+            stdout.write(`${str}\n`.toUpperCase());
+        }
+
+        stdin.pipe(TRStream).pipe(stdout);
+    } catch (e) {
+        Utils.renderHelpNotification(`An error occurred while reading the stream data [${e}]`.red);
+    }
+};
+
+/**
+ * An action to read CSV file data and output to stdout
+ * @param {string} filePath 
+ */
+function outputFile (filePath = null) {
+    try {
+        let file = Path.join(DATA_DIR, filePath);
+
+        let fd = FS.openSync(file, "r");
+        let readStream = FS.createReadStream(null, {fd: fd});
+        readStream.pipe(stdout);
+    } catch (e) {
+        Utils.renderHelpNotification(`An error occurred while reading the file [${e}]`.red);
+    }
+};
+
+/**
+ * An action to read CSV file data, convert to JSON and output to stdout
+ * @param {string} filePath 
+ */
+function convertFromFile (filePath = null) {
+    try {
+        let file = Path.join(DATA_DIR, filePath);
+
+        let csvConverter = new Converter({constructResult: false, toArrayString: true});
+        let readStream = FS.createReadStream(file);
+        readStream.pipe(csvConverter).pipe(stdout);
+    } catch (e) {
+        Utils.renderHelpNotification(`An error occurred while reading the file [${e}]`.red);
+    }
+};
+
+/**
+ * An action to read CSV file data, convert to JSON and write it to the same directory
+ * @param {string} filePath 
+ */
+function convertToFile (filePath = null) {
+    try {
+        let file = Path.join(DATA_DIR, filePath);
+        let filename = file.split("/").pop();
+    
+        let csvConverter = new Converter({constructResult: false, toArrayString: true});
+        let readStream = FS.createReadStream(file); 
+        let writeStream = FS.createWriteStream(
+            Path.join(DATA_DIR, `${filename.substr(0, filename.lastIndexOf("."))}.json`)
+        );
+        
+        readStream
+            .pipe(csvConverter)
+            .pipe(writeStream);
+    } catch (e) {
+        Utils.renderHelpNotification(`An error occurred while reading the file [${e}]`.red);
+    }
+};
+
+/**
+ * An action to collect all CSS files from the specified directory and bundle them into one single file
+ * @param {string} path 
+ */
+function cssBundler (path = null) {
+    try {
+        let dirname = Path.join(DATA_DIR, path);
+        let readStreams = [];
+        let targetFileName = "bundle.css";
+
+        FS.readdir(dirname, (error, filenames) => {
+            if (!error) {
+                filenames
+                    .filter(filename => Utils.isCSS(filename))
+                    .forEach(filename => {
+                        if (filename !== targetFileName) {
+                            let readStream = FS.createReadStream(Path.join(dirname, filename));
+                            readStream.on("error", _ => console.log("Read Stream error..."));
+                            readStreams.push(readStream);
+                        }
+                    });
+
+                let writeStream = FS.createWriteStream(Path.join(dirname, targetFileName));
+                writeStream.on("error", _ => console.log("Write Stream error..."));
+
+                readStreams.forEach(stream => {
+                    stream.pipe(writeStream, {end: false});
+                });
+            }
+        });
+    } catch (e) {
+        Utils.renderHelpNotification(`An error occurred while reading the file [${e}]`.red);
+    }
+};
+
+/**
+ * Helper function for through2
+ * @param {Buffer} buffer 
+ * @param {string} encoding 
+ * @param {Function} next 
+ */
+function write (buffer, encoding, next) {
+    this.push(buffer.toString().toUpperCase()); 
+    next();
+};
+
+/**
+ * Helper function for through2
+ * @param {Function} done 
+ */
+function end (done) {
+    done();
+};
+
+/**
+ * Create parser instance
+ */
 const parser = new CommandsParser(
-    Minimist(process.argv.slice(2), {
+    Minimist(inArguments, {
         alias: Utils.aliasObject,
         string: Utils.commands
     }
 ));
 
-parser.registerAction("reverse", {paramTypes: ["string"], action: reverse})
+/**
+ * Register available actions
+ */
+parser
+    .registerAction("reverse", {paramTypes: ["string"], action: reverse})
     .registerAction("transform", {paramTypes: ["string"], action: transform})
     .registerAction("outputFile", {paramTypes: ["filePath"], action: outputFile})
     .registerAction("convertFromFile", {paramTypes: ["filePath"], action: convertFromFile})
     .registerAction("convertToFile", {paramTypes: ["filePath"], action: convertToFile})
     .registerAction("cssBundler", {paramTypes: ["path"], action: cssBundler})
     .execute();
-
-//////////////////////////////////////////////////////////
-////////////////////// Actions ///////////////////////////
-//////////////////////////////////////////////////////////
-
-function reverse (str) {
-    const reverse = str => str.split``.reverse().join``;
-    const RLStream = Readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-        terminal: false
-    });
-
-    console.log(reverse(str));
-    RLStream.on("line", str => {
-        console.log(reverse(str));
-    })
-};
-
-function transform (str) {
-    process.stdin.pipe(TRStream).pipe(process.stdout);
-};
-
-function outputFile (filePath) {
-    let file = Path.join(DATA_DIR, filePath);
-    
-    let fd = FS.openSync(file, "r");
-    let readStream = FS.createReadStream(null, {fd: fd});
-    readStream.pipe(process.stdout);
-};
-
-function convertFromFile (filePath) {
-    let file = Path.join(DATA_DIR, filePath);
-
-    let csvConverter = new Converter({constructResult: false, toArrayString: true});
-    let readStream = FS.createReadStream(file);
-    readStream.pipe(csvConverter).pipe(process.stdout);
-};
-
-function convertToFile (filePath) {
-    let file = Path.join(DATA_DIR, filePath);
-    let filename = file.split("/").pop();
-
-    let csvConverter = new Converter({constructResult: false, toArrayString: true});
-    let readStream = FS.createReadStream(file); 
-    let writeStream = FS.createWriteStream(
-        Path.join(DATA_DIR, `${filename.substr(0, filename.lastIndexOf("."))}.json`)
-    );
-    
-    readStream
-        .pipe(csvConverter)
-        .pipe(writeStream);
-};
-
-function cssBundler (path) {
-    let dirname = Path.join(DATA_DIR, path);
-    let readStreams = [];
-    let targetFileName = "bundle.css";
-
-    FS.readdir(dirname, (error, filenames) => {
-        if (!error) {
-            filenames
-                .filter(filename => Utils.isCSS(filename))
-                .forEach(filename => {
-                    let readStream = FS.createReadStream(Path.join(dirname, filename));
-                    readStream.on("error", _ => console.log("Read Stream error..."));
-                    readStreams.push(readStream);
-                });
-
-            let writeStream = FS.createWriteStream(Path.join(dirname, targetFileName));
-            writeStream.on("error", _ => console.log("Write Stream error..."));
-
-            readStreams.forEach(stream => {
-                stream.pipe(writeStream, {end: false});
-            });
-
-            // let stream = Request(REMOTE_CONTENT_URL);
-            // stream.pipe(FS.createWriteStream(Path.join(dirname, "remote.css")));
-            // const write = stream.pipe(fs.createWriteStream(path))
-
-            // readStreams.forEach(readStream => {
-            //     readStream.on("end", function () {
-            //         next2();
-            //     });
-            //     readStream.pipe(writeStream, {end: false});
-            // });
-        }
-    });
-
-};

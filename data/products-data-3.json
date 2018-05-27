@@ -1,0 +1,9 @@
+[
+{"name":"Green Snowboard","sku":"sku_green_snowboard","base_price":"159.99","images":"/snowboards/snowboard-1.png","categories":"Sporting goods=>Snowboards","product_type":"Product","in_stock_amount":"10"},
+{"name":"Blue Snowboard","sku":"sku_blue_snowboard","base_price":"159.99","images":"/snowboards/snowboard-2.png","categories":"Sporting goods=>Snowboards","product_type":"Product","in_stock_amount":"10"},
+{"name":"Green Goalie Mask","sku":"sku_green_mask","base_price":"59.99","images":"goalie-mask-green.png","categories":"Sporting goods=>Hockey","product_type":"Product","in_stock_amount":"10"},
+{"name":"White Goalie Mask","sku":"sku_white_mask","base_price":"59.99","images":"goalie-mask-white.png","categories":"Sporting goods=>Hockey","product_type":"Product","in_stock_amount":"10"},
+{"name":"Hockey Puck Canada","sku":"sku_puck_canada","base_price":"5.99","images":"hockey-puck-canada.png","categories":"Sporting goods=>Hockey","product_type":"Product","in_stock_amount":"10"},
+{"name":"Hockey Puck","sku":"sku_puck","base_price":"5.00","images":"hockey-puck.png","categories":"Sporting goods=>Hockey","product_type":"Product","in_stock_amount":"10"},
+{"name":"Hockey Stick","sku":"sku_hockey_stick","base_price":"59.99","images":"hockey-stick.png","categories":"Sporting goods=>Hockey","product_type":"Product","in_stock_amount":"10"}
+]
