@@ -17,7 +17,9 @@ export class DirWatcher extends EventEmitter {
      */
     watch(path = null, delay = 100) {
         this.cache.path = path;
-        this.setWatcherInterval(delay, _ => this.checkDir(path, _ => super.emit(`dirwatcher:changed`, this.cache)));
+        this.setWatcherInterval(delay, _ => this.checkDir(path, _ =>
+            super.emit(`dirwatcher:changed`, this.cache.updatedFiles)));
+        
         return this;
     }
 
@@ -60,6 +62,9 @@ export class DirWatcher extends EventEmitter {
             });
 
         onComplete();
+        this.cache.updatedFiles = [];
+
+        return this;
     }
 
     /**
@@ -68,20 +73,18 @@ export class DirWatcher extends EventEmitter {
      * @param {Array<string>} files
      */
     hasChangedContent(files = []) {
-        let isContentChanged = false;
+        let filesWithChangedContent = [];
 
-        try {
-            files.forEach(filename => {
-                    let fileStat = statSync(Path.join(this.cache.path, filename));
-                    if (this.cache.statData[filename].ctimeMs !== fileStat.ctimeMs) {
-                        throw true;
-                    }
-                });
-        } catch (error) {
-            isContentChanged = error;
-        }
+        files.forEach(filename => {
+            let fileStat = statSync(Path.join(this.cache.path, filename));
+            if (this.cache.statData[filename].ctimeMs !== fileStat.ctimeMs) {
+                filesWithChangedContent.push(filename);
+            }
+        });
 
-        return isContentChanged;
+        this.cache.updatedFiles = filesWithChangedContent;
+
+        return filesWithChangedContent.length > 0 ? true : false;
     }
 
     /**
@@ -90,9 +93,8 @@ export class DirWatcher extends EventEmitter {
      * @param {Array<string>} filenames 
      */
     hasChangedFiles(filenames = []) {
-        let changes = this.cache.files
-            .filter(file => filenames.indexOf(file) < 0)
-            .concat(filenames.filter(file => this.cache.files.indexOf(file) < 0));
+        let changes = filenames.filter(file => this.cache.files.indexOf(file) < 0);
+        this.cache.updatedFiles = changes;
 
         return changes.length > 0 ? true : false;
     }
@@ -104,6 +106,8 @@ export class DirWatcher extends EventEmitter {
      */
     setWatcherInterval(delay = 100, callback) {
         this.cache.interval = setInterval(_ => callback(), delay);
+
+        return this;
     }
 
     /**
@@ -125,6 +129,7 @@ export class DirWatcher extends EventEmitter {
     initState(path = null) {
         this.cache = {
             files: [],
+            updatedFiles: [],
             statData: {},
             isFirstCheck: true,
             interval: null,

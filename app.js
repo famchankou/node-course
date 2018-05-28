@@ -13,9 +13,9 @@ const DATA_DIR = Path.join(__dirname, "data");
     let dirWatcher = new DirWatcher();
     
     dirWatcher.watch(DATA_DIR, 3000);
-    dirWatcher.on("dirwatcher:changed", value => {
+    dirWatcher.on("dirwatcher:changed", updatedFiles => {
         importer
-            .import(DATA_DIR)
+            .import(DATA_DIR, updatedFiles)
             .then(data => console.log("Data: ", JSON.stringify(data)))
             .catch(error => console.error("Error: ", error));
     });
