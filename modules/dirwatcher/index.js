@@ -1,3 +1,3 @@
-import { DirWatcher, emitter } from "./DirWatcher";
+import { DirWatcher } from "./DirWatcher";
 
-export { DirWatcher, emitter };
+export { DirWatcher };
