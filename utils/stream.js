@@ -4,7 +4,7 @@ const Colors = require("colors");
 const Minimist = require("minimist");
 const Converter = require("csvtojson").Converter;
 
-const { createLogger, format, transports } = require('winston');
+const { createLogger, format, transports } = require("winston");
 const { combine, timestamp, label, printf } = format;
 
 const Through = require("through2");
@@ -20,7 +20,7 @@ const DATA_DIR = Path.join(__dirname, "..", "data");
 const formatLog = printf(info => `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`);
 const logger = createLogger({
     format: combine(
-        label({ label: 'Stream.js' }),
+        label({ label: "Stream.js" }),
         timestamp(),
         formatLog
     ),
