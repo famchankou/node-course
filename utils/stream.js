@@ -15,8 +15,6 @@ const stdout = process.stdout;
 const inArguments = process.argv.slice(2);
 stdin.setEncoding("utf8");
 
-const DATA_DIR = Path.join(__dirname, "..", "data");
-
 const formatLog = printf(info => `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`);
 const logger = createLogger({
     format: combine(
@@ -152,18 +150,12 @@ class CommandsParser {
  * An action to read a string via stdin and output reversed string to stdout
  * @param {string} str 
  */
-function reverse (str = null) {
+function reverse () {
     const reverse = str => str.split``.reverse().join``;
     stdin.resume();
 
     try {
-        if (str && str.length) {
-            stdout.write(`Reversed: ${reverse(str)} \n`);
-        }
-
-        stdin.on("data", str => {
-            stdout.write(`Reversed: ${reverse(str)} \n`);
-        });
+        stdin.on("data", str => stdout.write(`${reverse(str)}\n`));
     } catch (e) {
         Utils.renderHelpNotification(`An error occurred while reading the stream data [${e}]`.red);
     }
@@ -173,12 +165,8 @@ function reverse (str = null) {
  * An action to read a string via stdin and output capitalised string to stdout
  * @param {string} str 
  */
-function transform (str = null) {
+function transform () {
     try {
-        if (str && str.length) {
-            stdout.write(`${str}\n`.toUpperCase());
-        }
-
         stdin.pipe(TRStream).pipe(stdout);
     } catch (e) {
         Utils.renderHelpNotification(`An error occurred while reading the stream data [${e}]`.red);
@@ -191,10 +179,9 @@ function transform (str = null) {
  */
 function outputFile (filePath = null) {
     try {
-        let file = Path.join(DATA_DIR, filePath);
-
-        let fd = FS.openSync(file, "r");
+        let fd = FS.openSync(filePath, "r");
         let readStream = FS.createReadStream(null, {fd: fd});
+        readStream.on('error', error => Utils.renderHelpNotification(`An error occurred while reading the file [${error}]`.red));
         readStream.pipe(stdout);
     } catch (e) {
         Utils.renderHelpNotification(`An error occurred while reading the file [${e}]`.red);
@@ -207,10 +194,9 @@ function outputFile (filePath = null) {
  */
 function convertFromFile (filePath = null) {
     try {
-        let file = Path.join(DATA_DIR, filePath);
-
         let csvConverter = new Converter({constructResult: false, toArrayString: true});
-        let readStream = FS.createReadStream(file);
+        let readStream = FS.createReadStream(filePath);
+        readStream.on('error', error => Utils.renderHelpNotification(`An error occurred while reading the file [${error}]`.red));
         readStream.pipe(csvConverter).pipe(stdout);
     } catch (e) {
         Utils.renderHelpNotification(`An error occurred while reading the file [${e}]`.red);
@@ -222,14 +208,16 @@ function convertFromFile (filePath = null) {
  * @param {string} filePath 
  */
 function convertToFile (filePath = null) {
+    const targetFileExtension = `.json`;
+
     try {
-        let file = Path.join(DATA_DIR, filePath);
-        let filename = file.split("/").pop();
+        let parsedFilePath = Path.parse(filePath);
     
         let csvConverter = new Converter({constructResult: false, toArrayString: true});
-        let readStream = FS.createReadStream(file); 
+        let readStream = FS.createReadStream(filePath); 
+        readStream.on('error', error => Utils.renderHelpNotification(`An error occurred while reading the file [${error}]`.red));
         let writeStream = FS.createWriteStream(
-            Path.join(DATA_DIR, `${filename.substr(0, filename.lastIndexOf("."))}.json`)
+            Path.join(parsedFilePath.dir, `${parsedFilePath.name}${targetFileExtension}`)
         );
         
         readStream
@@ -246,9 +234,11 @@ function convertToFile (filePath = null) {
  */
 function cssBundler (path = null) {
     try {
-        let dirname = Path.join(DATA_DIR, path);
+        let dirname = Path.normalize(path);
         let readStreams = [];
         let targetFileName = "bundle.css";
+        let customFileName = "epam.css";
+        let runLast = null;
 
         FS.readdir(dirname, (error, filenames) => {
             if (!error) {
@@ -257,17 +247,23 @@ function cssBundler (path = null) {
                     .forEach(filename => {
                         if (filename !== targetFileName) {
                             let readStream = FS.createReadStream(Path.join(dirname, filename));
-                            readStream.on("error", _ => logger.error("Read Stream error..."));
-                            readStreams.push(readStream);
+                            readStream.on("error", error => logger.error(`Read Stream error [${error}]`));
+
+                            if (Path.parse(readStream.path).base === customFileName) {
+                                runLast = readStream;
+                            } else {
+                                readStreams.push(readStream);
+                            }
                         }
                     });
 
                 let writeStream = FS.createWriteStream(Path.join(dirname, targetFileName));
-                writeStream.on("error", _ => logger.error("Write Stream error..."));
-
-                readStreams.forEach(stream => {
-                    stream.pipe(writeStream, {end: false});
-                });
+                writeStream.on("error", error => logger.error(`Write Stream error [${error}]`));
+                writeStream.on("close", _ => runLast.pipe(
+                    FS.createWriteStream(Path.join(dirname, targetFileName),
+                    {"flags": "a", "encodin": "UTF-8", "mode": 0666}
+                )));
+                readStreams.forEach(stream => stream.pipe(writeStream));
             }
         });
     } catch (e) {
