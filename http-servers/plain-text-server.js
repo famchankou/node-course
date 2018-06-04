@@ -1,7 +1,7 @@
 const HTTP = require("http");
+const PORT = 3000;
 
-HTTP
-    .createServer()
+HTTP.createServer()
     .on("request", (request, response) => {
         const { url, method } = request;
         response.writeHead(200, {
@@ -9,4 +9,4 @@ HTTP
         });
         response.end("Hello World");
     })
-    .listen(3000);
+    .listen(PORT);
