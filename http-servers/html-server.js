@@ -5,7 +5,7 @@ const Stream = require("stream");
 const ReadableStream = new Stream.PassThrough();
 
 const DIR = __dirname;
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;;
 const templateName = "index.html";
 
 class Utils {
@@ -36,4 +36,5 @@ HTTP.createServer()
         // ReadableStream.end();
 
     })
-    .listen(PORT);
+    .on("error", error => console.log(error))
+    .listen(PORT, _ => console.log("Server is running at  => http://localhost:" + PORT + "/\nCTRL + C to shutdown"));

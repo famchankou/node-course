@@ -1,5 +1,5 @@
 const HTTP = require("http");
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;;
 
 HTTP.createServer()
     .on("request", (request, response) => {
@@ -9,4 +9,5 @@ HTTP.createServer()
         });
         response.end("Hello World");
     })
-    .listen(PORT);
+    .on("error", error => console.log(error))
+    .listen(PORT, _ => console.log("Server is running at  => http://localhost:" + PORT + "/\nCTRL + C to shutdown"));
