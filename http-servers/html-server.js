@@ -30,11 +30,6 @@ HTTP.createServer()
 
         response.write(interpolatedTemplate);
         response.end();
-
-        // ReadableStream.write(interpolatedTemplate);
-        // ReadableStream.pipe(response);
-        // ReadableStream.end();
-
     })
     .on("error", error => console.log(error))
     .listen(PORT, _ => console.log("Server is running at  => http://localhost:" + PORT + "/\nCTRL + C to shutdown"));

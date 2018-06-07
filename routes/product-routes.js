@@ -1,27 +1,55 @@
 import Express from "express";
 import { ProductController } from "../controllers";
+import { Product } from "../models";
 
 const Router = Express.Router();
 const productConstroller = new ProductController();
 
 Router.get("/api/products", (req, res) => {
-    console.log("Cookies", req.cookies);
-    console.log("Query", req.parsedQuery);
-    res.send("API Products");
+    let cookies = req.cookies;
+    let requestParams = req.parsedQuery;
+    let products = productConstroller.getProducts();
+
+    res.send(JSON.stringify(products));
 });
 
 Router.get("/api/products/:id", (req, res) => {
-    console.log(req.params.id);
-    res.send("API PRODUCT");
+    let cookies = req.cookies;
+    let requestParams = req.parsedQuery;
+    let id = req.params.id;
+    let product = null;
+
+    if (id && id.length) {
+        product = productConstroller.getProduct(id);
+    }
+
+    res.send(JSON.stringify(product));
 });
 
 Router.get("/api/products/:id/reviews", (req, res) => {
-    console.log(req.params.id);
-    res.send("API PRODUCT REVIEW");
+    let cookies = req.cookies;
+    let requestParams = req.parsedQuery;
+    let id = req.params.id;
+    let review = null;
+
+    if (id && id.length) {
+        review = productConstroller.getProductReview(id);
+    }
+
+    res.send(JSON.stringify(review));
 });
 
 Router.post("/api/products", (req, res) => {
-    res.send("API PRODUCT POST");
+    let cookies = req.cookies;
+    let requestParams = req.parsedQuery;
+    let product = null;
+
+    if (req.body) {
+        product = new Product(req.body);
+        productConstroller.addProduct(product);
+    }
+    
+    res.send(product);
 });
 
 module.exports = Router;

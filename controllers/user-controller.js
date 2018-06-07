@@ -1,10 +1,22 @@
+import { User } from "../models";
+
 export class UserController {
+    constructor() {
+        this.initUsers();
+    }
+
     getUsers() {
-        return [
-            {id: 1, name: "John", surname: "Dowe"},
-            {id: 2, name: "Michale", surname: "Smith"},
-            {id: 3, name: "Jimmy", surname: "O'Sallivan"},
-            {id: 4, name: "Douglas", surname: "Crockford"},
+        return this.users;
+    }
+
+    initUsers() {
+        this.users = [
+            new User({name: "John", surname: "Dowe", age: 23}),
+            new User({name: "Michale", surname: "Smith", age: 27}),
+            new User({name: "Jimmy", surname: "O'Sallivan", age: 37}),
+            new User({name: "Douglas", surname: "Crockford", age: 26})
         ];
+
+        return this;
     }
 }

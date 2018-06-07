@@ -5,7 +5,6 @@ import { createLogger, format, transports } from "winston";
 import Express from "express";
 
 import config from "./config";
-import { User, Product } from "./models";
 import { QueryParserMiddleware } from "./middlewares";
 import { Importer, DirWatcher } from "./modules";
 import { UserRouter, ProductRouter } from "./routes";
@@ -48,19 +47,5 @@ app.use((err, req, res, next) => {
         error: err
     });
 });
-
-let user = new User();
-let product = new Product();
-
-let importer = new Importer();
-let dirWatcher = new DirWatcher();
-
-// dirWatcher.watch(DATA_DIR, 3000);
-// dirWatcher.on("dirwatcher:changed", updatedFiles => {
-//     importer
-//         .import(DATA_DIR, updatedFiles)
-//         .then(data => console.log("Data: ", JSON.stringify(data)))
-//         .catch(error => console.error("Error: ", error));
-// });
 
 module.exports = app;
