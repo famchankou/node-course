@@ -1,6 +1,6 @@
 {
     "name": "node-course",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "description": "Node Course",
     "main": "index.js",
     "scripts": {
