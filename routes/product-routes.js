@@ -49,7 +49,7 @@ Router.post("/api/products", (req, res) => {
         productConstroller.addProduct(product);
     }
     
-    res.send(product);
+    res.send(JSON.stringify(product));
 });
 
 module.exports = Router;
