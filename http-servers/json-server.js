@@ -20,7 +20,6 @@ const product = {
 HTTP.createServer()
     .on("request", (request, response) => {
         const { url, method, headers } = request;
-        const userAgent = headers["user-agent"];
         response.writeHead(200, {
             "Content-Type": "application/json"
         });
