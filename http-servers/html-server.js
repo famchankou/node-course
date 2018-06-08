@@ -24,7 +24,7 @@ HTTP.createServer()
             "Content-Type": "text/html"
         });
 
-        let template = Buffer.from(FS.readFileSync(Path.join(DIR, templateName))).toString("utf8");
+        let template = FS.readFileSync(Path.join(DIR, templateName)).toString("utf8");
         let interpolatedTemplate = Utils.interpolate(template, {message: "Render Interpolated Variable From Template"});
 
         response.write(interpolatedTemplate);
