@@ -1,11 +1,10 @@
 import * as Path from "path";
-import CookieParser from "cookie-parser";
 import * as BodyParser from "body-parser";
 import { createLogger, format, transports } from "winston";
 import Express from "express";
 
 import config from "./config";
-import { QueryParserMiddleware } from "./middlewares";
+import { QueryParserMiddleware, CookieParserMiddleware } from "./middlewares";
 import { Importer, DirWatcher } from "./modules";
 import { UserRouter, ProductRouter } from "./routes";
 
@@ -25,9 +24,9 @@ const logger = createLogger({
 
 // Middlewares
 app.use(BodyParser.json());
-app.use(QueryParserMiddleware.parseQueryParams);
 app.use(BodyParser.urlencoded({ extended: true }));
-app.use(CookieParser());
+app.use(QueryParserMiddleware.parseQueryParams);
+app.use(CookieParserMiddleware.parseCookie);
 
 // Routes
 app.use(UserRouter);

@@ -6,16 +6,12 @@ const Router = Express.Router();
 const productConstroller = new ProductController();
 
 Router.get("/api/products", (req, res) => {
-    let cookies = req.cookies;
-    let requestParams = req.parsedQuery;
     let products = productConstroller.getProducts();
 
     res.send(JSON.stringify(products));
 });
 
 Router.get("/api/products/:id", (req, res) => {
-    let cookies = req.cookies;
-    let requestParams = req.parsedQuery;
     let id = req.params.id;
     let product = null;
 
@@ -27,8 +23,6 @@ Router.get("/api/products/:id", (req, res) => {
 });
 
 Router.get("/api/products/:id/reviews", (req, res) => {
-    let cookies = req.cookies;
-    let requestParams = req.parsedQuery;
     let id = req.params.id;
     let review = null;
 
@@ -40,8 +34,6 @@ Router.get("/api/products/:id/reviews", (req, res) => {
 });
 
 Router.post("/api/products", (req, res) => {
-    let cookies = req.cookies;
-    let requestParams = req.parsedQuery;
     let product = null;
 
     if (req.body) {
