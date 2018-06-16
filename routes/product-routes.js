@@ -3,10 +3,9 @@ import { ProductController } from "../controllers";
 import { Product } from "../models";
 
 const Router = Express.Router();
-const productConstroller = new ProductController();
 
 Router.get("/api/products", (req, res) => {
-    let products = productConstroller.getProducts();
+    let products = ProductController.getProducts();
 
     res.send(JSON.stringify(products));
 });
@@ -16,7 +15,7 @@ Router.get("/api/products/:id", (req, res) => {
     let product = null;
 
     if (id && id.length) {
-        product = productConstroller.getProduct(id);
+        product = ProductController.getProduct(id);
     }
 
     res.send(JSON.stringify(product));
@@ -27,7 +26,7 @@ Router.get("/api/products/:id/reviews", (req, res) => {
     let review = null;
 
     if (id && id.length) {
-        review = productConstroller.getProductReview(id);
+        review = ProductController.getProductReview(id);
     }
 
     res.send(JSON.stringify(review));
@@ -38,7 +37,7 @@ Router.post("/api/products", (req, res) => {
 
     if (req.body) {
         product = new Product(req.body);
-        productConstroller.addProduct(product);
+        ProductController.addProduct(product);
     }
     
     res.send(JSON.stringify(product));

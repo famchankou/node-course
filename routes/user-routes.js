@@ -2,10 +2,9 @@ import Express from "express";
 import { UserController } from "../controllers";
 
 const Router = Express.Router();
-const userConstroller = new UserController();
 
 Router.get("/api/users", (req, res) => {
-    let users = userConstroller.getUsers();
+    let users = UserController.getUsers();
     
     res.send(JSON.stringify(users));
 });
