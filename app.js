@@ -2,11 +2,12 @@ import * as Path from "path";
 import * as BodyParser from "body-parser";
 import { createLogger, format, transports } from "winston";
 import Express from "express";
+import Passport from "passport";
 
-import config from "./config";
 import { QueryParserMiddleware, CookieParserMiddleware, CheckTokenMiddleware } from "./middlewares";
 import { Importer, DirWatcher } from "./modules";
 import { UserRouter, ProductRouter, AuthRouter } from "./routes";
+import { UserController } from "./controllers";
 
 const app = Express();
 const DATA_DIR = Path.join(__dirname, "data");
@@ -30,6 +31,7 @@ app.use(CookieParserMiddleware.parseCookie);
 app.use(CheckTokenMiddleware.check);
 
 // Routes
+app.use(Passport.initialize());
 app.use(AuthRouter);
 app.use(UserRouter);
 app.use(ProductRouter);

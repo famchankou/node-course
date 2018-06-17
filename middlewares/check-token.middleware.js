@@ -1,11 +1,17 @@
 import JWT from "jsonwebtoken";
 import config from "../config";
 
+const EXCLUDED_URLS = [
+    "/auth",
+    "/passport/auth/local",
+    "/api/users/auth"
+];
+
 export class CheckTokenMiddleware {
     static check(req, res, next) {
         let token = req.headers["x-access-token"];
 
-        if (req.parsedQuery.path === "/auth") {
+        if (EXCLUDED_URLS.includes(req.parsedQuery.path)) {
             next();
         } else {
             if (!token) {

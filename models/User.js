@@ -8,5 +8,6 @@ export class User {
         this.age = user.age;
         this.email = user.email;
         this.password = user.password;
+        this.username = user.username;
     }
 }
