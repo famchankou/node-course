@@ -4,7 +4,7 @@ import { createLogger, format, transports } from "winston";
 import Express from "express";
 import Passport from "passport";
 
-import { QueryParserMiddleware, CookieParserMiddleware, CheckTokenMiddleware } from "./middlewares";
+import { QueryParserMiddleware, CookieParserMiddleware } from "./middlewares";
 import { Importer, DirWatcher } from "./modules";
 import { UserRouter, ProductRouter, AuthRouter } from "./routes";
 import { UserController } from "./controllers";
@@ -28,7 +28,6 @@ app.use(BodyParser.json());
 app.use(BodyParser.urlencoded({ extended: true }));
 app.use(QueryParserMiddleware.parseQueryParams);
 app.use(CookieParserMiddleware.parseCookie);
-app.use(CheckTokenMiddleware.check);
 
 // Routes
 app.use(Passport.initialize());
