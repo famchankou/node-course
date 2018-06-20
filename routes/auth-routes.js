@@ -17,7 +17,7 @@ const Router = Express.Router();
 Router.post("/auth", (req, res) => {
     let user = UserController.getUser(req.body.username, req.body.password);
 
-    if (user && BC.compareSync(req.body.password, user.password)) {
+    if (user) {
         let token = JWT.sign({ id: user.id }, config.secret, { expiresIn: 86400 });
 
         res.status(200).send({
