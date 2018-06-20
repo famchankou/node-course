@@ -11,7 +11,7 @@ Router.get("/api/users", CheckTokenMiddleware.check, (req, res) => {
     res.send(JSON.stringify(users));
 });
 
-Router.get("/api/passport/users", Passport.authenticate("bearer", { session: false }), (req, res) => {
+Router.get("/api/passport/users", (req, res) => {
     let users = UserController.getUsers();
     
     res.send(JSON.stringify(users));

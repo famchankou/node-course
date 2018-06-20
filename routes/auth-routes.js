@@ -4,7 +4,6 @@ import BC from "bcryptjs";
 import Passport from "passport";
 
 import { Strategy as LocalStrategy } from "passport-local";
-import { Strategy as BearerStrategy } from "passport-http-bearer";
 import { Strategy as FacebookStrategy } from "passport-facebook";
 import { Strategy as TwitterStrategy } from "passport-twitter";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
@@ -100,11 +99,6 @@ Passport.use(new GoogleStrategy({
     },
     (accessToken, refreshToken, profile, cb) => {
         
-    }
-));
-
-Passport.use(new BearerStrategy((accessToken, done) => {
-        done(null, {});
     }
 ));
 
