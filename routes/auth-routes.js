@@ -7,6 +7,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as FacebookStrategy } from "passport-facebook";
 import { Strategy as TwitterStrategy } from "passport-twitter";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as VKStrategy } from "passport-vkontakte";
 
 import { UserController } from "../controllers";
 import config from "../config";
@@ -43,6 +44,16 @@ Router.post("/passport/auth/local", Passport.authenticate("local", { session: fa
     res.json({id: req.user.id, token: `TOKEN-${req.user.id}`});
 });
 
+Router.get("/passport/auth/vkontakte", Passport.authenticate("vkontakte", { scope: ['status', 'email', 'friends', 'notify', 'wall'] }));
+Router.get(
+    "/passport/auth/vkontakte/callback",
+    Passport.authenticate("vkontakte", { successRedirect: "/index", failureRedirect: "/error" }),
+    (req, res) => {
+        console.log("VK authentication done and callback invoked...");
+        res.end("done");
+    }
+);
+
 Router.get("/passport/auth/facebook", Passport.authenticate("facebook"));
 Router.get("/passport/auth/facebook/callback", Passport.authenticate("facebook", { failureRedirect: "/error" }), (req, res) => {
     res.redirect("/");
@@ -72,9 +83,25 @@ Passport.use("local", new LocalStrategy({
     }
 }));
 
+Passport.use(new VKStrategy({
+        clientID: "6612357",
+        clientSecret: "36mG66VS3nBX8MVuFRle",
+        callbackURL:  "http://localhost:8080/passport/auth/vkontakte/callback"
+    },
+    (accessToken, refreshToken, params, profile, done) => {
+
+        console.log("1", accessToken);
+        console.log("2", refreshToken);
+        console.log("3", params);
+        console.log("4", profile);
+
+        done(null);
+    }
+));
+
 Passport.use(new FacebookStrategy({
         clientID: "FACEBOOK_APP_ID",
-        clientSecret: "FACEBOOK_APP_SECRET",
+        clientSecret: config.secret,
         callbackURL: "http://localhost:8080/passport/auth/facebook/callback"
     },
     (accessToken, refreshToken, profile, cb) => {
@@ -84,7 +111,7 @@ Passport.use(new FacebookStrategy({
 
 Passport.use(new TwitterStrategy({
         consumerKey: "TWITTER_CONSUMER_KEY",
-        consumerSecret: "TWITTER_CONSUMER_SECRET",
+        consumerSecret: config.secret,
         callbackURL: "http://localhost:8080/passport/auth/twitter/callback"
     },
     (token, tokenSecret, profile, cb) => {
@@ -94,7 +121,7 @@ Passport.use(new TwitterStrategy({
 
 Passport.use(new GoogleStrategy({
         clientID: "GOOGLE_CLIENT_ID",
-        clientSecret: "GOOGLE_CLIENT_SECRET",
+        clientSecret: config.secret,
         callbackURL: "http://localhost:8080/passport/auth/google/callback"
     },
     (accessToken, refreshToken, profile, cb) => {
