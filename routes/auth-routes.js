@@ -40,35 +40,10 @@ Router.post("/auth", (req, res) => {
     }
 });
 
+
 Router.post("/passport/auth/local", Passport.authenticate("local", { session: false }), (req, res) => {
     res.json({id: req.user.id, token: `TOKEN-${req.user.id}`});
 });
-
-Router.get("/passport/auth/vkontakte", Passport.authenticate("vkontakte", { scope: ['status', 'email', 'friends', 'notify', 'wall'] }));
-Router.get(
-    "/passport/auth/vkontakte/callback",
-    Passport.authenticate("vkontakte", { successRedirect: "/index", failureRedirect: "/error" }),
-    (req, res) => {
-        console.log("VK authentication done and callback invoked...");
-        res.end("done");
-    }
-);
-
-Router.get("/passport/auth/facebook", Passport.authenticate("facebook"));
-Router.get("/passport/auth/facebook/callback", Passport.authenticate("facebook", { failureRedirect: "/error" }), (req, res) => {
-    res.redirect("/");
-});
-
-Router.get("/passport/auth/twitter", Passport.authenticate("twitter"));
-Router.get("/passport/auth/twitter/callback", Passport.authenticate("twitter", { failureRedirect: "/error" }), (req, res) => {
-    res.redirect("/");
-});
-
-Router.get("/passport/auth/google", Passport.authenticate("google", { scope: ["profile"] }));
-Router.get("/passport/auth/google/callback", Passport.authenticate("google", { failureRedirect: "/error" }), (req, res) => {
-    res.redirect("/");
-});
-
 Passport.use("local", new LocalStrategy({
     usernameField: "username",
     passwordField: "password",
@@ -83,6 +58,15 @@ Passport.use("local", new LocalStrategy({
     }
 }));
 
+Router.get("/passport/auth/vkontakte", Passport.authenticate("vkontakte", { scope: ['status', 'email', 'friends', 'notify', 'wall'] }));
+Router.get(
+    "/passport/auth/vkontakte/callback",
+    Passport.authenticate("vkontakte", { successRedirect: "/index", failureRedirect: "/error" }),
+    (req, res) => {
+        console.log("VK authentication done and callback invoked...");
+        res.end("done");
+    }
+);
 Passport.use(new VKStrategy({
         clientID: "6612357",
         clientSecret: "36mG66VS3nBX8MVuFRle",
@@ -95,10 +79,25 @@ Passport.use(new VKStrategy({
         console.log("3", params);
         console.log("4", profile);
 
-        done(null);
+        done(null, {
+            id: profile.id,
+            name: profile.name,
+            profileUrl: profile.profileUrl
+        });
     }
 ));
+Passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+Passport.deserializeUser((id, done) => {
+    done(null, {});
+});
 
+
+Router.get("/passport/auth/facebook", Passport.authenticate("facebook"));
+Router.get("/passport/auth/facebook/callback", Passport.authenticate("facebook", { failureRedirect: "/error" }), (req, res) => {
+    res.redirect("/");
+});
 Passport.use(new FacebookStrategy({
         clientID: "FACEBOOK_APP_ID",
         clientSecret: config.secret,
@@ -109,6 +108,11 @@ Passport.use(new FacebookStrategy({
     }
 ));
 
+
+Router.get("/passport/auth/twitter", Passport.authenticate("twitter"));
+Router.get("/passport/auth/twitter/callback", Passport.authenticate("twitter", { failureRedirect: "/error" }), (req, res) => {
+    res.redirect("/");
+});
 Passport.use(new TwitterStrategy({
         consumerKey: "TWITTER_CONSUMER_KEY",
         consumerSecret: config.secret,
@@ -119,6 +123,11 @@ Passport.use(new TwitterStrategy({
     }
 ));
 
+
+Router.get("/passport/auth/google", Passport.authenticate("google", { scope: ["profile"] }));
+Router.get("/passport/auth/google/callback", Passport.authenticate("google", { failureRedirect: "/error" }), (req, res) => {
+    res.redirect("/");
+});
 Passport.use(new GoogleStrategy({
         clientID: "GOOGLE_CLIENT_ID",
         clientSecret: config.secret,
