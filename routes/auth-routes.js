@@ -42,7 +42,13 @@ Router.post("/auth", (req, res) => {
 
 
 Router.post("/passport/auth/local", Passport.authenticate("local", { session: false }), (req, res) => {
-    res.json({id: req.user.id, token: `TOKEN-${req.user.id}`});
+    let token = JWT.sign({ id: req.user.id }, config.secret, { expiresIn: 86400 });
+
+    res.status(200).send({
+        "code": 200,
+        "message": "OK",
+        "token": token
+    });
 });
 Passport.use("local", new LocalStrategy({
     usernameField: "username",
@@ -59,38 +65,45 @@ Passport.use("local", new LocalStrategy({
 }));
 
 Router.get("/passport/auth/vkontakte", Passport.authenticate("vkontakte", { scope: ['status', 'email', 'friends', 'notify', 'wall'] }));
-Router.get(
-    "/passport/auth/vkontakte/callback",
-    Passport.authenticate("vkontakte", { successRedirect: "/index", failureRedirect: "/error" }),
-    (req, res) => {
-        console.log("VK authentication done and callback invoked...");
-        res.end("done");
-    }
-);
+Router.get("/passport/auth/vkontakte/callback", Passport.authenticate("vkontakte", { failureRedirect: "/error" }), (req, res) => {
+    res.status(200).send({
+        "code": 200,
+        "message": "OK",
+        "data": {
+            "user": req.user
+        },
+        "token": req.user.token
+    });
+});
 Passport.use(new VKStrategy({
         clientID: "6612357",
         clientSecret: "36mG66VS3nBX8MVuFRle",
         callbackURL:  "http://localhost:8080/passport/auth/vkontakte/callback"
     },
     (accessToken, refreshToken, params, profile, done) => {
+        if (profile) {
+            let token = JWT.sign({ id: profile.id }, config.secret, { expiresIn: 86400 });
 
-        console.log("1", accessToken);
-        console.log("2", refreshToken);
-        console.log("3", params);
-        console.log("4", profile);
-
-        done(null, {
-            id: profile.id,
-            name: profile.name,
-            profileUrl: profile.profileUrl
-        });
+            done(null, {
+                id: profile.id,
+                name: profile.name,
+                profileUrl: profile.profileUrl,
+                token: token
+            });
+        } else {
+            done("No such user...");
+        }
     }
 ));
 Passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, user);
 });
-Passport.deserializeUser((id, done) => {
-    done(null, {});
+Passport.deserializeUser(function (data, done) {
+    try {
+        done(null, JSON.parse(data));
+    } catch (error) {
+        done(error);
+    }
 });
 
 
