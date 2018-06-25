@@ -1,6 +1,7 @@
-export class CreateUsers {
-    static up(queryInterface, Sequelize) {
-        return queryInterface.createTable("Users", {
+'use strict';
+module.exports = {
+    up: (queryInterface, Sequelize) => {
+        return queryInterface.createTable('Users', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -36,9 +37,8 @@ export class CreateUsers {
                 allowNull: false
             }
         });
+    },
+    down: (queryInterface, Sequelize) => {
+        return queryInterface.dropTable('Users');
     }
-        
-    static down(queryInterface /* , Sequelize */) {
-        return queryInterface.dropTable("Users")
-    }
-}
+};

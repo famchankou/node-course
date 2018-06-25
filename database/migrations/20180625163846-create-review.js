@@ -1,6 +1,7 @@
-export class CreateReviews {
-    static up(queryInterface, Sequelize) {
-        return queryInterface.createTable("Reviews", {
+'use strict';
+module.exports = {
+    up: (queryInterface, Sequelize) => {
+        return queryInterface.createTable('Reviews', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -21,17 +22,16 @@ export class CreateReviews {
             },
             product_id: {
                 type: Sequelize.INTEGER,
-                onDelete: "CASCADE",
+                onDelete: 'CASCADE',
                 references: {
-                    model: "Products",
-                    key: "id",
-                    as: "product_id",
+                    model: 'Products',
+                    key: 'id',
+                    as: 'product_id',
                 },
             }
         });
+    },
+    down: (queryInterface, Sequelize) => {
+        return queryInterface.dropTable('Reviews');
     }
-
-    static down(queryInterface /* , Sequelize */) {
-        return queryInterface.dropTable("Reviews");
-    }
-}
+};

@@ -1,6 +1,7 @@
-export class CreateProducts {
-    static up(queryInterface, Sequelize) {
-        return queryInterface.createTable("Products", {
+'use strict';
+module.exports = {
+    up: (queryInterface, Sequelize) => {
+        return queryInterface.createTable('Products', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -10,11 +11,11 @@ export class CreateProducts {
             user_id: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
-                onDelete: "CASCADE",
+                onDelete: 'CASCADE',
                 references: {
-                    model: "Users",
-                    key: "id",
-                    as: "user_id",
+                    model: 'Users',
+                    key: 'id',
+                    as: 'user_id',
                 },
             },
             sku: {
@@ -34,9 +35,8 @@ export class CreateProducts {
                 allowNull: false
             }
         });
+    },
+    down: (queryInterface, Sequelize) => {
+        return queryInterface.dropTable('Products');
     }
-
-    static down(queryInterface /* , Sequelize */) {
-        return queryInterface.dropTable("Products");
-    }
-}
+};
