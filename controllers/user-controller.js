@@ -5,7 +5,7 @@ export class UserController {
     static create(req, res) {
         return DB.User
             .create({...req.body, password: req.body.password})
-            .then(user => res.status(200).send(user))
+            .then(user => res.status(201).send(user))
             .catch(error => res.status(400).send(error));
     }
 
@@ -70,14 +70,14 @@ export class UserController {
                     });
                 }
 
-                res.status(200).send(user);
+                return res.status(200).send(user);
             })
             .catch(error => res.status(400).send(error));
     }
 
     static getAll(req, res) {
         return DB.User
-            .find()
+            .findAll()
             .then(users => {
                 if (!users.length) {
                     return res.status(404).send({
@@ -85,7 +85,7 @@ export class UserController {
                     });
                 }
 
-                res.status(200).send(JSON.stringify(users));
+                return res.status(200).send(users);
             })
             .catch(error => res.status(400).send(error));
     }
