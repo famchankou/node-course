@@ -8,31 +8,35 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER,
             },
-            user_id: {
+            userId: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 onDelete: 'CASCADE',
                 references: {
                     model: 'Users',
                     key: 'id',
-                    as: 'user_id',
+                    as: 'userId',
                 },
             },
             sku: {
                 type: Sequelize.STRING,
                 allowNull: false
             },
-            base_price: {
+            basePrice: {
                 type: Sequelize.FLOAT,
                 allowNull: false
             },
-            product_type: {
+            productType: {
                 type: Sequelize.STRING,
                 allowNull: true
             },
-            created_at: {
+            createdAt: {
+                allowNull: false,
                 type: Sequelize.DATE,
-                allowNull: false
+            },
+            updatedAt: {
+                allowNull: false,
+                type: Sequelize.DATE,
             }
         });
     },

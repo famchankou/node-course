@@ -1,34 +1,34 @@
 'use strict';
-module.exports = (sequelize, DataTypes) => {
-    var Review = sequelize.define('Review', {
+module.exports = (Sequelize, DataTypes) => {
+    var Review = Sequelize.define('Review', {
         title: {
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
             allowNull: false,
         },
         description: {
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
             allowNull: false
         },
-        created_at: {
-            type: Sequelize.DATE,
+        createdAt: {
+            type: DataTypes.DATE,
             allowNull: false
         },
-        product_id: {
-            type: Sequelize.INTEGER,
+        productId: {
+            type: DataTypes.INTEGER,
             onDelete: 'CASCADE',
             references: {
                 model: 'Products',
                 key: 'id',
-                as: 'product_id',
+                as: 'productId',
             },
         },
-        user_id: {
-            type: Sequelize.INTEGER,
+        userId: {
+            type: DataTypes.INTEGER,
             onDelete: 'CASCADE',
             references: {
                 model: 'Users',
                 key: 'id',
-                as: 'user_id',
+                as: 'userId',
             },
         }
     });

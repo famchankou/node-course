@@ -1,26 +1,26 @@
 'use strict';
-module.exports = (sequelize, DataTypes) => {
-    var Product = sequelize.define('Product', {
-        user_id: {
-            type: Sequelize.INTEGER,
+module.exports = (Sequelize, DataTypes) => {
+    var Product = Sequelize.define('Product', {
+        userId: {
+            type: DataTypes.INTEGER,
             allowNull: false,
             onDelete: 'CASCADE',
             references: {
                 model: 'Users',
                 key: 'id',
-                as: 'user_id',
+                as: 'userId',
             },
         },
         sku: {
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
             allowNull: false
         },
-        base_price: {
-            type: Sequelize.FLOAT,
+        basePrice: {
+            type: DataTypes.FLOAT,
             allowNull: false
         },
-        product_type: {
-            type: Sequelize.STRING,
+        productType: {
+            type: DataTypes.STRING,
             allowNull: true
         }
     });

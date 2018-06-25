@@ -1,20 +1,13 @@
 import Express from "express";
 import { UserController } from "../controllers";
 import { CheckTokenMiddleware } from "../middlewares";
-import Passport from "passport";
 
 const Router = Express.Router();
 
-Router.get("/api/users", CheckTokenMiddleware.check, (req, res) => {
-    let users = UserController.getUsers();
-    
-    res.send(JSON.stringify(users));
-});
-
-Router.get("/api/passport/users", (req, res) => {
-    let users = UserController.getUsers();
-    
-    res.send(JSON.stringify(users));
-});
+Router.post("/api/users", UserController.create);
+Router.put("/api/users/:id", UserController.update);
+Router.delete("/api/users/:id", UserController.delete);
+Router.get("/api/users/:id", UserController.get);
+Router.get("/api/users", UserController.getAll);
 
 module.exports = Router;

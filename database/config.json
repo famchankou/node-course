@@ -5,6 +5,7 @@
         "database": "node-course-dev",
         "host": "127.0.0.1",
         "port": 5432,
-        "dialect": "postgres"
+        "dialect": "postgres",
+        "operatorsAliases": false
     }
 }

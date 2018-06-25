@@ -16,27 +16,31 @@ module.exports = {
                 type: Sequelize.STRING,
                 allowNull: false
             },
-            created_at: {
-                type: Sequelize.DATE,
-                allowNull: false
-            },
-            product_id: {
+            productId: {
                 type: Sequelize.INTEGER,
                 onDelete: 'CASCADE',
                 references: {
                     model: 'Products',
                     key: 'id',
-                    as: 'product_id',
+                    as: 'productId',
                 },
             },
-            user_id: {
+            userId: {
                 type: Sequelize.INTEGER,
                 onDelete: 'CASCADE',
                 references: {
                     model: 'Users',
                     key: 'id',
-                    as: 'user_id',
+                    as: 'userId',
                 },
+            },
+            createdAt: {
+                allowNull: false,
+                type: Sequelize.DATE,
+            },
+            updatedAt: {
+                allowNull: false,
+                type: Sequelize.DATE,
             }
         });
     },
