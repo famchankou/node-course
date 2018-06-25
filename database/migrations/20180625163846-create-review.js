@@ -13,7 +13,7 @@ module.exports = {
                 allowNull: false,
             },
             description: {
-                type: Sequelize.String,
+                type: Sequelize.STRING,
                 allowNull: false
             },
             created_at: {
@@ -27,6 +27,15 @@ module.exports = {
                     model: 'Products',
                     key: 'id',
                     as: 'product_id',
+                },
+            },
+            user_id: {
+                type: Sequelize.INTEGER,
+                onDelete: 'CASCADE',
+                references: {
+                    model: 'Users',
+                    key: 'id',
+                    as: 'user_id',
                 },
             }
         });

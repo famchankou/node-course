@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         description: {
-            type: Sequelize.String,
+            type: Sequelize.STRING,
             allowNull: false
         },
         created_at: {
@@ -21,11 +21,24 @@ module.exports = (sequelize, DataTypes) => {
                 key: 'id',
                 as: 'product_id',
             },
+        },
+        user_id: {
+            type: Sequelize.INTEGER,
+            onDelete: 'CASCADE',
+            references: {
+                model: 'Users',
+                key: 'id',
+                as: 'user_id',
+            },
         }
     });
 
     Review.associate = (models) => {
         Review.belongsTo(models.Product, {
+            foreignKey: 'id',
+            onDelete: 'CASCADE',
+        });
+        Review.belongsTo(models.User, {
             foreignKey: 'id',
             onDelete: 'CASCADE',
         });
