@@ -1,44 +1,44 @@
 import Express from "express";
 import { ProductController } from "../controllers";
+import { CheckTokenMiddleware } from "../middlewares";
 import { Product } from "../models";
 
 const Router = Express.Router();
-const productConstroller = new ProductController();
 
-Router.get("/api/products", (req, res) => {
-    let products = productConstroller.getProducts();
+Router.get("/api/products", CheckTokenMiddleware.check, (req, res) => {
+    let products = ProductController.getProducts();
 
     res.send(JSON.stringify(products));
 });
 
-Router.get("/api/products/:id", (req, res) => {
+Router.get("/api/products/:id", CheckTokenMiddleware.check, (req, res) => {
     let id = req.params.id;
     let product = null;
 
     if (id && id.length) {
-        product = productConstroller.getProduct(id);
+        product = ProductController.getProduct(id);
     }
 
     res.send(JSON.stringify(product));
 });
 
-Router.get("/api/products/:id/reviews", (req, res) => {
+Router.get("/api/products/:id/reviews", CheckTokenMiddleware.check, (req, res) => {
     let id = req.params.id;
     let review = null;
 
     if (id && id.length) {
-        review = productConstroller.getProductReview(id);
+        review = ProductController.getProductReview(id);
     }
 
     res.send(JSON.stringify(review));
 });
 
-Router.post("/api/products", (req, res) => {
+Router.post("/api/products", CheckTokenMiddleware.check, (req, res) => {
     let product = null;
 
     if (req.body) {
         product = new Product(req.body);
-        productConstroller.addProduct(product);
+        ProductController.addProduct(product);
     }
     
     res.send(JSON.stringify(product));

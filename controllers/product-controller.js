@@ -1,6 +1,6 @@
 import { Product, Review } from "../models";
 
-export class ProductController {
+class ProductController {
     constructor() {
         this.initProducts().initProductsReviews();
     }
@@ -63,3 +63,5 @@ export class ProductController {
         return this;
     }
 }
+
+module.exports = new ProductController();

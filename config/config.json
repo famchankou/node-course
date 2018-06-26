@@ -1,3 +1,4 @@
 {
-    "name": "Node.js Application"
+    "name": "Node.js Application",
+    "secret": "authsecretkey"
 }
