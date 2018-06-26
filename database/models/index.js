@@ -14,6 +14,11 @@ if (config.use_env_variable) {
     sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
+sequelize
+    .authenticate()
+    .then(_ => console.log(`Connection to PostgreSQL DB on port [5432]`))
+    .catch(error => console.error(`Unable to connect to the PostgreSQL DB [${error}]`));
+
 readdirSync(Path.join(__dirname))
     .filter((file) => (file.indexOf(".") !== 0) && (file !== basename) && (file.slice(-3) === '.js'))
     .forEach((file) => {
