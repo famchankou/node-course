@@ -4,7 +4,7 @@ import BC from "bcryptjs";
 export class UserController {
     static create(req, res) {
         return DB.User
-            .create({...req.body, password: req.body.password})
+            .create({...req.body, password: BC.hashSync(req.body.password, BC.genSaltSync(10))})
             .then(user => res.status(201).send(user))
             .catch(error => res.status(400).send(error));
     }
@@ -26,7 +26,7 @@ export class UserController {
                         age: req.body.age || user.age,
                         username: req.body.username || user.username,
                         email: req.body.email || user.email,
-                        password: req.body.password || user.password,
+                        password: req.body.password ? BC.hashSync(req.body.password, BC.genSaltSync(10)) : user.password,
                     })
                     .then(() => res.status(200).send(user))
                     .catch((error) => res.status(400).send(error));
@@ -60,7 +60,8 @@ export class UserController {
         return DB.User
             .find({
                 where: {
-                    id: req.params.id
+                    username: req.body.username,
+                    email: req.body.email
                 }
             })
             .then(user => {

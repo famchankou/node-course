@@ -18,6 +18,10 @@ module.exports = {
                     as: 'userId',
                 },
             },
+            name: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
             sku: {
                 type: Sequelize.STRING,
                 allowNull: false

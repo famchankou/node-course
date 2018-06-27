@@ -11,6 +11,10 @@ module.exports = (Sequelize, DataTypes) => {
                 as: 'userId',
             },
         },
+        name: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         sku: {
             type: DataTypes.STRING,
             allowNull: false
