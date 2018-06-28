@@ -6,7 +6,7 @@ import Passport from "passport";
 
 import { QueryParserMiddleware, CookieParserMiddleware } from "./middlewares";
 import { Importer, DirWatcher } from "./modules";
-import { IndexRouter, ErrorRouter, UserRouter, ProductRouter, AuthRouter } from "./routes";
+import { IndexRouter, ErrorRouter, UserRouter, ProductRouter, ReviewRouter, AuthRouter } from "./routes";
 import { UserController } from "./controllers";
 
 const app = Express();
@@ -36,6 +36,7 @@ app.use(ErrorRouter);
 app.use(AuthRouter);
 app.use(UserRouter);
 app.use(ProductRouter);
+app.use(ReviewRouter);
 
 app.use((req, res, next) => {
     let err = new Error(`Page Not Found - ${JSON.stringify(req.parsedQuery.href)}`);

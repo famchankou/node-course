@@ -1,67 +1,96 @@
-import { Product, Review } from "../models";
+import DB from "../database/models";
 
-class ProductController {
-    constructor() {
-        this.initProducts().initProductsReviews();
+export class ProductController {
+    static create(req, res) {
+        return DB.Product
+            .create({
+                ...req.body,
+                userId: req.body.userId,
+            })
+            .then(product => res.status(201).send(product))
+            .catch(error => res.status(400).send(error));
     }
 
-    getProducts() {
-        return this.products;
+    static update(req, res) {
+        return DB.Product
+            .find({
+                where: {
+                    id: req.params.id
+                }
+            })
+            .then(product => {
+                if (!product) {
+                    return res.status(404).send({
+                        message: "Product Not Found",
+                    });
+                }
+
+                return product
+                    .update({
+                        userId: product.userId,
+                        basePrice: req.body.basePrice || product.basePrice,
+                        sku: req.body.sku || product.sku,
+                        productType: req.body.productType || product.productType
+                    })
+                    .then(product => res.status(200).send(product))
+                    .catch(error => res.status(400).send(error));
+            })
+            .catch(error => res.status(400).send(error));
     }
 
-    getProduct(id) {
-        return this.products.find(product => product.id === id);
+    static delete(req, res) {
+        return DB.Product
+            .find({
+                where: {
+                    id: req.params.id
+                }
+            })
+            .then(product => {
+                if (!product) {
+                    return res.status(404).send({
+                        message: "Product Not Found",
+                    });
+                }
+
+                return product
+                    .destroy()
+                    .then(() => res.status(204).send())
+                    .catch(error => res.status(400).send(error));
+            })
+            .catch(error => res.status(400).send(error));
     }
 
-    getProductReviews() {
-        return this.reviews;
+    static get(req, res) {
+        return DB.Product
+            .find({
+                where: {
+                    id: req.params.id
+                }
+            })
+            .then(product => {
+                if (!product) {
+                    return res.status(404).send({
+                        message: "Product Not Found",
+                    });
+                }
+
+                return res.status(200).send(product);
+            })
+            .catch(error => res.status(400).send(error));
     }
 
-    getProductReview(id) {
-        return this.reviews.get(id);
-    }
+    static getAll(req, res) {
+        return DB.Product
+            .findAll()
+            .then(products => {
+                if (!products.length) {
+                    return res.status(404).send({
+                        message: "Products Not Found",
+                    });
+                }
 
-    createProduct(product) {
-        this.addProduct(product);
-    }
-
-    addProduct(product) {
-        this.products.push(product);
-
-        return this;
-    }
-
-    removeProduct(id) {
-        this.products.splice(this.products.findIndex(product => product.id === id), 1);
-        this.reviews.delete(id);
-
-        return this;
-    }
-
-    initProducts() {
-        this.products = [
-            new Product({name: "Apple Watch", sku: "KHG-34", basePrice: 150, productType: "Electronics"}),
-            new Product({name: "Apple MacBook Pro", sku: "LNS-104", basePrice: 1500, productType: "Electronics"}),
-            new Product({name: "Adidas T-Shirt", sku: "GOH-12", basePrice: 100, productType: "Clothes"}),
-            new Product({name: "Nike Dunk", sku: "PLS-789", basePrice: 330, productType: "Shoes"})
-        ];
-
-        return this;
-    }
-
-    initProductsReviews() {
-        this.reviews = new Map();
-        
-        this.products.forEach(product => {
-            this.reviews.set(product.id, [
-                new Review({contractorId: product.id, description: "long description 1", title: "short description 1"}),
-                new Review({contractorId: product.id, description: "long description 2", title: "short description 2"}),
-                new Review({contractorId: product.id, description: "long description 3", title: "short description 3"})
-            ]);
-        });
-
-        return this;
+                return res.status(200).send(products);
+            })
+            .catch(error => res.status(400).send(error));
     }
 }
-
-module.exports = new ProductController();

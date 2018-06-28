@@ -1,6 +1,6 @@
 {
     "name": "node-course",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "description": "Node Course",
     "main": "index.js",
     "scripts": {
@@ -11,7 +11,7 @@
         "type": "git",
         "url": "git+https://github.com/famchankou/node-course.git"
     },
-    "author": "Alexander Fomchenkov <Aliaksandr_Famchankou@epam.com>",
+    "author": "Alexander Fomchenkov <famchankou@gmail.com>",
     "license": "ISC",
     "devDependencies": {
         "babel-cli": "^6.26.0",
@@ -29,6 +29,9 @@
         "minimist": "^1.2.0",
         "nodemon": "^1.17.3",
         "npm": "^6.0.1",
+        "pg": "^7.4.3",
+        "sequelize": "^4.37.10",
+        "sequelize-cli": "^4.0.0",
         "passport": "^0.4.0",
         "passport-facebook": "^2.1.1",
         "passport-google-oauth20": "^1.0.0",

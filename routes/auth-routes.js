@@ -9,35 +9,42 @@ import { Strategy as TwitterStrategy } from "passport-twitter";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as VKStrategy } from "passport-vkontakte";
 
+import DB from "../database/models";
 import { UserController } from "../controllers";
 import config from "../config";
 
 const Router = Express.Router();
 
 Router.post("/auth", (req, res) => {
-    let user = UserController.getUser(req.body.username, req.body.password);
+    DB.User.find({
+        where: {
+            username: req.body.username
+        }
+    })
+    .then(user => {
+        if (user && BC.compareSync(req.body.password, user.password)) {
+            let token = JWT.sign({ id: user.id }, config.secret, { expiresIn: 86400 });
 
-    if (user) {
-        let token = JWT.sign({ id: user.id }, config.secret, { expiresIn: 86400 });
-
-        res.status(200).send({
-            "code": 200,
-            "message": "OK",
-            "data": {
-                "user": {
-                    "email": user.email,
-                    "username": user.username
-                }
-            },
-            "token": token
-        });
-    } else {
-        res.status(404).send({
-            "code": 404,
-            "message": "Not Found",
-            "data": {}
-        });
-    }
+            res.status(200).send({
+                "code": 200,
+                "message": "OK",
+                "data": {
+                    "user": {
+                        "email": user.email,
+                        "username": user.username
+                    }
+                },
+                "token": token
+            });
+        } else {
+            res.status(404).send({
+                "code": 404,
+                "message": "User Not Found",
+                "data": {}
+            });
+        }
+    })
+    .catch(error => res.status(400).send(error));
 });
 
 
@@ -55,13 +62,19 @@ Passport.use("local", new LocalStrategy({
     passwordField: "password",
     session: false
 }, (username, password, done) => {
-    let user = UserController.getUser(username, password);
-
-    if (!user) {
-        done(null, false, "Invalid username or password.");
-    } else {
-        done(null, user);
-    }
+    DB.User.find({
+        where: {
+            username: username
+        }
+    })
+    .then(user => {
+        if (user && BC.compareSync(password, user.password)) {
+            done(null, user);
+        } else {
+            done(null, false, "Invalid username or password.");
+        }
+    })
+    .catch(error => res.status(400).send(error));
 }));
 
 Router.get("/passport/auth/vkontakte", Passport.authenticate("vkontakte", { scope: ['status', 'email', 'friends', 'notify', 'wall'] }));
@@ -76,8 +89,8 @@ Router.get("/passport/auth/vkontakte/callback", Passport.authenticate("vkontakte
     });
 });
 Passport.use(new VKStrategy({
-        clientID: "6612357",
-        clientSecret: "36mG66VS3nBX8MVuFRle",
+        clientID: "VK_CLIENT_ID",
+        clientSecret: config.secret,
         callbackURL:  "http://localhost:8080/passport/auth/vkontakte/callback"
     },
     (accessToken, refreshToken, params, profile, done) => {

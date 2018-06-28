@@ -2,7 +2,7 @@ import { UUIDGenerator } from "../helpers";
 
 export class User {
     constructor(user) {
-        this.id = UUIDGenerator.UUID16();
+        this.id = user.id;
         this.name = user.name;
         this.surname = user.surname;
         this.age = user.age;

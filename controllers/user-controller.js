@@ -1,34 +1,93 @@
-import { User } from "../models";
+import DB from "../database/models";
 import BC from "bcryptjs";
 
-class UserController {
-    constructor() {
-        this.initUsers();
+export class UserController {
+    static create(req, res) {
+        return DB.User
+            .create({...req.body, password: BC.hashSync(req.body.password, BC.genSaltSync(10))})
+            .then(user => res.status(201).send(user))
+            .catch(error => res.status(400).send(error));
     }
 
-    getUsers() {
-        return this.users;
+    static update(req, res) {
+        return DB.User
+            .findById(req.params.id)
+            .then(user => {
+                if (!user) {
+                    return res.status(404).send({
+                        message: "User Not Found",
+                    });
+                }
+
+                return user
+                    .update({
+                        name: req.body.name || user.name,
+                        surname: req.body.surname || user.surname,
+                        age: req.body.age || user.age,
+                        username: req.body.username || user.username,
+                        email: req.body.email || user.email,
+                        password: req.body.password ? BC.hashSync(req.body.password, BC.genSaltSync(10)) : user.password,
+                    })
+                    .then(() => res.status(200).send(user))
+                    .catch((error) => res.status(400).send(error));
+            })
+            .catch((error) => res.status(400).send(error));
     }
 
-    getUser(username, password) {
-        return this.users.find(_user => _user.username === username && BC.compareSync(password, _user.password));
+    static delete(req, res) {
+        return DB.User
+            .find({
+                where: {
+                    id: req.params.id
+                }
+            })
+            .then(user => {
+                if (!user) {
+                    return res.status(404).send({
+                        message: "User Not Found",
+                    });
+                }
+
+                return user
+                    .destroy()
+                    .then(() => res.status(204).send())
+                    .catch(error => res.status(400).send(error));
+            })
+            .catch(error => res.status(400).send(error));
     }
 
-    addUser(user) {
-        this.users.push(user);
-        return this.users.find(_user => _user.id === user.id);
+    static get(req, res) {
+        return DB.User
+            .find({
+                where: {
+                    username: req.body.username,
+                    email: req.body.email
+                }
+            })
+            .then(user => {
+                if (!user) {
+                    return res.status(404).send({
+                        message: "User Not Found",
+                    });
+                }
+
+                return res.status(200).send(user);
+            })
+            .catch(error => res.status(400).send(error));
     }
 
-    initUsers() {
-        this.users = [
-            new User({username: "@John", name: "John", surname: "Dowe", email: "john@gmail.com", password: BC.hashSync("1234", BC.genSaltSync(10)), age: 23}),
-            new User({username: "@Michale", name: "Michale", surname: "Smith", email: "smith@gmail.com", password: BC.hashSync("1234", BC.genSaltSync(10)), age: 27}),
-            new User({username: "@Jimmy", name: "Jimmy", surname: "O'Sallivan", email: "osallivan@gmail.com", password: BC.hashSync("1234", BC.genSaltSync(10)), age: 37}),
-            new User({username: "@Douglas", name: "Douglas", surname: "Crockford", email: "crockford@gmail.com", password: BC.hashSync("1234", BC.genSaltSync(10)), age: 26})
-        ];
+    static getAll(req, res) {
+        return DB.User
+            .findAll()
+            .then(users => {
+                if (!users.length) {
+                    return res.status(404).send({
+                        message: "Users Not Found",
+                    });
+                }
 
-        return this;
+                return res.status(200).send(users);
+            })
+            .catch(error => res.status(400).send(error));
     }
 }
-
-module.exports = new UserController();

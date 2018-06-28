@@ -1,0 +1,11 @@
+{
+    "development": {
+        "username": "postgres",
+        "password": "master123",
+        "database": "node-course-dev",
+        "host": "127.0.0.1",
+        "port": 5432,
+        "dialect": "postgres",
+        "operatorsAliases": false
+    }
+}
