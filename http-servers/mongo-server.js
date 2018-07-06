@@ -1,8 +1,4 @@
 const HTTP = require("http");
-const FS = require("fs");
-const Path = require("path");
-const Stream = require("stream");
-const ReadableStream = new Stream.PassThrough();
 const MongoConnector = require("../database/mongodb/index");
 
 const PORT = process.env.PORT || 3000;
@@ -21,15 +17,12 @@ HTTP.createServer()
         MongoConnector.start();
         MongoConnector.createCollection();
         MongoConnector.findAll((data) => {
-            if (data.length === 0) {
-                MongoConnector.insertDocuments();
-            }
-        });
-        MongoConnector.findAll((data) => {
             if (data.length) {
                 response.end(JSON.stringify(data[getRandomInt(0, data.length - 1)]));
             } else {
-                response.end("No Data Found...");
+                MongoConnector.insertDocuments(data => {
+                    response.end(JSON.stringify(data.ops[getRandomInt(0, data.ops.length - 1)]));
+                });
             }
         });
     })
