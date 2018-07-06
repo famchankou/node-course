@@ -19,17 +19,6 @@ const citySchema = new Schema({
 }, { collection: "mongoose_cities"});
 var City = Mongoose.model("City", citySchema);
 
-citySchema.pre("save", (next) => {
-    var currentDate = new Date();
-    this.updated_at = currentDate;
-
-    if (!this.created_at) {
-        this.created_at = currentDate;
-    }
-    
-    next();
-});
-
 const getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }

@@ -4,6 +4,7 @@ import AuthRouter from "./auth-routes";
 import IndexRouter from "./index-routes";
 import ErrorRouter from "./error-routes";
 import ReviewRouter from "./review-routes";
+import CityRouter from "./city-routes";
 
 export {
     UserRouter,
@@ -11,5 +12,6 @@ export {
     ProductRouter,
     IndexRouter,
     ErrorRouter,
-    ReviewRouter
+    ReviewRouter,
+    CityRouter
 };
