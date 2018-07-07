@@ -9,8 +9,14 @@ const City = new Schema({
         lat: Number,
         long: Number
     },
+    lastModifiedDate: String,
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 }, { collection: "mongoose_cities"});
+
+City.pre("save", function(next) {
+    this.lastModifiedDate = new Date().toString();
+    next();
+});
 
 export default Mongoose.model("City", City);

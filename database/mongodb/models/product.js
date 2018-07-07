@@ -8,8 +8,14 @@ const Product = new Schema({
     sku: String,
     basePrice: Number,
     productType: String,
+    lastModifiedDate: String,
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 }, { collection: "mongoose_products"});
+
+Product.pre("save", function (next) {
+    this.lastModifiedDate = new Date().toString();
+    next();
+});
 
 export default Mongoose.model("Product", Product);
