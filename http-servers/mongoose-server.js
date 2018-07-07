@@ -1,7 +1,7 @@
 const HTTP = require("http");
 const Mongoose = require("mongoose");
 const PORT = process.env.PORT || 3000;
-const FIXTURES = require("../database/mongodb/fixtures.json");
+const FIXTURES = require("../database/mongodb/city-fixtures.json");
 
 Mongoose.connect("mongodb://localhost:27017/node-course");
 

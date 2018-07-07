@@ -1,0 +1,51 @@
+[
+    {
+        "id": "1",
+        "name": "Product1",
+        "sku": "123",
+        "basePrice": 100,
+        "productType": "Sport"
+    },
+    {
+        "id": "2",
+        "name": "Product2",
+        "sku": "134",
+        "basePrice": 123,
+        "productType": "Wear"
+    },
+    {
+        "id": "3",
+        "name": "Product3",
+        "sku": "145",
+        "basePrice": 154,
+        "productType": "Sport"
+    },
+    {
+        "id": "4",
+        "name": "Product4",
+        "sku": "156",
+        "basePrice": 156,
+        "productType": "Suite"
+    },
+    {
+        "id": "5",
+        "name": "Product5",
+        "sku": "167",
+        "basePrice": 235,
+        "productType": "Sport"
+    },
+    {
+        "id": "6",
+        "name": "Product6",
+        "sku": "178",
+        "basePrice": 345,
+        "productType": "Wear"
+    },
+    {
+        "id": "7",
+        "name": "Product7",
+        "sku": "189",
+        "basePrice": 567,
+        "productType": "Sport"
+    }
+]

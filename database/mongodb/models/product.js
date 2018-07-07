@@ -1,4 +1,4 @@
-import { Mongoose } from "mongoose";
+import Mongoose from "mongoose";
 const Schema = Mongoose.Schema;
 
 const Product = new Schema({
@@ -10,6 +10,6 @@ const Product = new Schema({
     productType: String,
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
-}, { collection: "mongoose_cities"});
+}, { collection: "mongoose_products"});
 
-module.exports = Mongoose.model("Product", Product);
+export default Mongoose.model("Product", Product);

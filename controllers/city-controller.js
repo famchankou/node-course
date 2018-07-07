@@ -11,8 +11,11 @@ export class CityController {
                 long: req.body.location.long,
             }
         }, (error, city) => {
-            if (error) console.log(error);
-            res.send("saved");
+            if (error) {
+                res.send(JSON.stringify(error));
+            } else {
+                res.send(`City created: ${JSON.stringify(city)}`);
+            }
         });
     }
 
@@ -26,33 +29,45 @@ export class CityController {
                 long: req.body.location.long,
             }
         }, (error, updatedObj) => {
-            res.end(`City updated ${JSON.stringify(updatedObj)}`);
+            if (error) {
+                res.send(JSON.stringify(error));
+            } else {
+                res.end(`City updated ${JSON.stringify(updatedObj)}`);
+            }
         });
     }
 
     static delete(req, res) {
         City.deleteOne({ _id: req.params.id }, (error) => {
-            if (error) console.log(error);
-            
-            res.end(`City with ID ${req.params.id} removed...`);
+            if (error) {
+                res.send(JSON.stringify(error));
+            } else {
+                res.end(`City with ID ${req.params.id} removed...`);
+            }
         });
     }
 
     static getAll(req, res) {
         City.find({}, (error, cities) => {
-            if (error) console.log(error);
-            if (cities.length === 0) {
-                res.end("No cities found...");
+            if (error) {
+                res.send(JSON.stringify(error));
             } else {
-                res.end(JSON.stringify(cities));
+                if (cities.length === 0) {
+                    res.end("No cities found...");
+                } else {
+                    res.end(JSON.stringify(cities));
+                }
             }
         });
     }
 
     static get(req, res) {
         City.findOne({name: req.params.name, country: req.params.country}, (error, city) => {
-            if (error) console.log(error);
-            res.send(JSON.stringify(city));
+            if (error) {
+                res.send(JSON.stringify(error));
+            } else {
+                res.send(JSON.stringify(city));
+            }
         })
     }
 }

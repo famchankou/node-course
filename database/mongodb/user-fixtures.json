@@ -1,0 +1,29 @@
+[
+    {
+        "id": "1",
+        "name": "John",
+        "surname": "Dowe",
+        "age": 12,
+        "email": "john_dowe@gmail.com",
+        "password": "1234",
+        "username": "@Dowe"
+    },
+    {
+        "id": "2",
+        "name": "Michael",
+        "surname": "Conor",
+        "age": 22,
+        "email": "michael_conor@gmail.com",
+        "password": "1234",
+        "username": "@Conor"
+    },
+    {
+        "id": "3",
+        "name": "Jimmy",
+        "surname": "Loop",
+        "age": 34,
+        "email": "jimmy_loop@gmail.com",
+        "password": "1234",
+        "username": "@Loop"
+    }
+]
