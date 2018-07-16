@@ -8,7 +8,7 @@ const Product = new Schema({
         type: String,
         validate: {
             validator: v => /^[A-Z][a-z]*$/.test(v),
-            message: '{VALUE} is not a valid product name!'
+            message: message => `[${message.value}] is not a valid product name!`
         },
         required: [true, 'Product name is required']
     },
@@ -16,7 +16,7 @@ const Product = new Schema({
         type: String,
         validate: {
             validator: v => /[A-Za-z]*[0-9]*\w*/.test(v),
-            message: '{VALUE} is not a valid sku!'
+            message: message => `[${message.value}] is not a valid sku!`
         },
         required: [true, 'Sku is required']
     },
@@ -24,7 +24,7 @@ const Product = new Schema({
         type: Number,
         validate: {
             validator: v => /\D*/.test(v),
-            message: '{VALUE} is not valid base price!'
+            message: message => `[${message.value}] is not valid base price!`
         },
         required: [true, 'Base price is required']
     },

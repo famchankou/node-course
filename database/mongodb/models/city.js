@@ -6,7 +6,7 @@ const City = new Schema({
         type: String,
         validate: {
             validator: v => /^[A-Z][a-z]*$/.test(v),
-            message: '{VALUE} is not a valid city name!'
+            message: message => `[${message.value}] is not a valid city name!`
         },
         required: [true, 'City name is required']
     },
@@ -14,7 +14,7 @@ const City = new Schema({
         type: String,
         validate: {
             validator: v => /^[A-Z][a-z]*$/.test(v),
-            message: '{VALUE} is not a valid country name!'
+            message: message => `[${message.value}] is not a valid country name!`
         },
         required: [true, 'Country name is required']
     },
@@ -27,7 +27,7 @@ const City = new Schema({
                     var num = parseFloat((v + "").replace(/^(.*\.\d\d)\d*$/, '$1'));
                     return num > 0 && num < 100;
                 },
-                message: '{VALUE} is not valid latitude!'
+                message: message => `[${message.value}] is not valid latitude!`
             },
             required: [true, 'Latitude is required']
         },
@@ -38,7 +38,7 @@ const City = new Schema({
                     var num = parseFloat((v + "").replace(/^(.*\.\d\d)\d*$/, '$1'));
                     return num > 0 && num < 100;
                 },
-                message: '{VALUE} is not valid longitude!'
+                message: message => `[${message.value}] is not valid longitude!`
             },
             required: [true, 'Longitude is required']
         }

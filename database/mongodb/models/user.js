@@ -7,7 +7,7 @@ const User = new Schema({
         type: String,
         validate: {
             validator: v => /^[A-Z][a-z]*$/.test(v),
-            message: '{VALUE} is not a valid user name!'
+            message: message => `[${message.value}] is not a valid user name!`
         },
         required: [true, 'User name is required']
     },
@@ -15,7 +15,7 @@ const User = new Schema({
         type: String,
         validate: {
             validator: v => /^[A-Z][a-z]*$/.test(v),
-            message: '{VALUE} is not a valid User name!'
+            message: message => `[${message.value}] is not a valid User name!`
         },
         required: [true, 'User name is required']
     },
@@ -27,7 +27,7 @@ const User = new Schema({
                 var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 return re.test(String(email).toLowerCase());
             },
-            message: '{VALUE} is not a valid user email!'
+            message: message => `[${message.value}] is not a valid user email!`
         },
         required: [true, 'User email is required']
     },
@@ -36,7 +36,7 @@ const User = new Schema({
         type: String,
         validate: {
             validator: v => /^[\w\W]*[A-Z][a-z]*$/.test(v),
-            message: '{VALUE} is not a valid username!'
+            message: message => `[${message.value}] is not a valid username!`
         },
         required: [true, 'Username is required']
     },
