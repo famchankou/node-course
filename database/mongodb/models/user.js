@@ -35,7 +35,7 @@ const User = new Schema({
     username: {
         type: String,
         validate: {
-            validator: v => /^[A-Z][a-z]*$/.test(v),
+            validator: v => /^[\w\W]*[A-Z][a-z]*$/.test(v),
             message: '{VALUE} is not a valid username!'
         },
         required: [true, 'Username is required']
