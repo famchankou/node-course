@@ -7,7 +7,7 @@ const Product = new Schema({
     name: {
         type: String,
         validate: {
-            validator: v => /^[A-Z][a-z]*$/.test(v),
+            validator: v => /^[A-Z].[\w\W0-9]*$/.test(v),
             message: message => `[${message.value}] is not a valid product name!`
         },
         required: [true, 'Product name is required']
