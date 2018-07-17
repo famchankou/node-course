@@ -1,3 +1,4 @@
+import Product from "../database/mongodb/models/product";
 import DB from "../database/models";
 
 export class ProductController {
@@ -92,5 +93,72 @@ export class ProductController {
                 return res.status(200).send(products);
             })
             .catch(error => res.status(400).send(error));
+    }
+
+    static createViaMongo(req, res) {
+        Product.create({
+            id: req.body.id,
+            userId: req.body.userId,
+            name: req.body.name,
+            sku: req.body.sku,
+            basePrice: req.body.basePrice,
+            productType: req.body.productType
+        }, (error, product) => {
+            if (error) {
+                res.send(JSON.stringify(error));
+            } else {
+                res.send(`Product created: ${JSON.stringify(product)}`);
+            }
+        });
+    }
+
+    static updateViaMongo(req, res) {
+        Product.updateOne({ _id: req.params.id }, {
+            userId: req.body.userId,
+            name: req.body.name,
+            sku: req.body.sku,
+            basePrice: req.body.basePrice,
+            productType: req.body.productType
+        }, (error, updatedObj) => {
+            if (error) {
+                res.send(JSON.stringify(error));
+            } else {
+                res.end(`Product updated ${JSON.stringify(updatedObj)}`);
+            }
+        });
+    }
+
+    static deleteViaMongo(req, res) {
+        Product.deleteOne({ _id: req.params.id }, (error) => {
+            if (error) {
+                res.send(JSON.stringify(error));
+            } else {
+                res.end(`Product with ID ${req.params.id} removed...`);
+            }
+        });
+    }
+
+    static getAllViaMongo(req, res) {
+        Product.find({}, (error, products) => {
+            if (error) {
+                res.send(JSON.stringify(error));
+            } else {
+                if (products.length === 0) {
+                    res.end("No products found...");
+                } else {
+                    res.end(JSON.stringify(products));
+                }
+            }
+        });
+    }
+
+    static getViaMongo(req, res) {
+        Product.findOne({_id: req.params.id}, (error, product) => {
+            if (error) {
+                res.send(JSON.stringify(error));
+            } else {
+                res.send(JSON.stringify(product));
+            }
+        })
     }
 }

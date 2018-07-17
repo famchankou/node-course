@@ -3,11 +3,15 @@ import * as BodyParser from "body-parser";
 import { createLogger, format, transports } from "winston";
 import Express from "express";
 import Passport from "passport";
+import Mongoose from "mongoose";
 
+import { IndexRouter, ErrorRouter, UserRouter, ProductRouter,
+    ReviewRouter, AuthRouter, CityRouter } from "./routes";
 import { QueryParserMiddleware, CookieParserMiddleware } from "./middlewares";
 import { Importer, DirWatcher } from "./modules";
-import { IndexRouter, ErrorRouter, UserRouter, ProductRouter, ReviewRouter, AuthRouter } from "./routes";
 import { UserController } from "./controllers";
+
+Mongoose.connect("mongodb://localhost:27017/node-course");
 
 const app = Express();
 const DATA_DIR = Path.join(__dirname, "data");
@@ -37,6 +41,7 @@ app.use(AuthRouter);
 app.use(UserRouter);
 app.use(ProductRouter);
 app.use(ReviewRouter);
+app.use(CityRouter);
 
 app.use((req, res, next) => {
     let err = new Error(`Page Not Found - ${JSON.stringify(req.parsedQuery.href)}`);

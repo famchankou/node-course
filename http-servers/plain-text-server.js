@@ -1,5 +1,5 @@
 const HTTP = require("http");
-const PORT = process.env.PORT || 3000;;
+const PORT = process.env.PORT || 3000;
 
 HTTP.createServer()
     .on("request", (request, response) => {
