@@ -4,6 +4,7 @@ import { createLogger, format, transports } from "winston";
 import Express from "express";
 import Passport from "passport";
 import Mongoose from "mongoose";
+import cors from "cors";
 
 import { IndexRouter, ErrorRouter, UserRouter, ProductRouter,
     ReviewRouter, AuthRouter, CityRouter } from "./routes";
@@ -11,7 +12,11 @@ import { QueryParserMiddleware, CookieParserMiddleware } from "./middlewares";
 import { Importer, DirWatcher } from "./modules";
 import { UserController } from "./controllers";
 
-Mongoose.connect("mongodb://localhost:27017/node-course");
+try {
+    Mongoose.connect("mongodb://localhost:27017/node-course");
+} catch (error) {
+    console.log(`MongoDB connection Error: ${error}`);
+}
 
 const app = Express();
 const DATA_DIR = Path.join(__dirname, "data");
@@ -33,6 +38,7 @@ app.use(BodyParser.urlencoded({ extended: true }));
 app.use(QueryParserMiddleware.parseQueryParams);
 app.use(CookieParserMiddleware.parseCookie);
 app.use(Passport.initialize());
+app.use(cors());
 
 // Routes
 app.use(IndexRouter);

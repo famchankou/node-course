@@ -7,7 +7,8 @@ const Router = Express.Router();
 Router.post("/api/users", UserController.create);
 Router.put("/api/users/:id", CheckTokenMiddleware.check, UserController.update);
 Router.delete("/api/users/:id", CheckTokenMiddleware.check, UserController.delete);
-Router.post("/api/user", CheckTokenMiddleware.check, UserController.get);
+Router.get("/api/users/:id", CheckTokenMiddleware.check, UserController.get);
+Router.get("/api/users", CheckTokenMiddleware.check, UserController.getAll);
 
 Router.post("/api/mongo/users", CheckTokenMiddleware.check, UserController.createViaMongo);
 Router.put("/api/mongo/users/:id", CheckTokenMiddleware.check, UserController.updateViaMongo);
