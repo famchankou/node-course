@@ -2,7 +2,7 @@ import Express from "express";
 
 const Router = Express.Router();
 
-Router.get("/index", (req, res) => {
+Router.get("/api/index", (req, res) => {
     res.send("");
 });
 

@@ -15,7 +15,7 @@ import config from "../config";
 
 const Router = Express.Router();
 
-Router.post("/auth", (req, res) => {
+Router.post("/api/auth", (req, res) => {
     DB.User.find({
         where: {
             username: req.body.username
@@ -48,7 +48,7 @@ Router.post("/auth", (req, res) => {
 });
 
 
-Router.post("/passport/auth/local", Passport.authenticate("local", { session: false }), (req, res) => {
+Router.post("/api/passport/auth/local", Passport.authenticate("local", { session: false }), (req, res) => {
     let token = JWT.sign({ id: req.user.id }, config.secret, { expiresIn: 86400 });
 
     res.status(200).send({
@@ -77,8 +77,8 @@ Passport.use("local", new LocalStrategy({
     .catch(error => res.status(400).send(error));
 }));
 
-Router.get("/passport/auth/vkontakte", Passport.authenticate("vkontakte", { scope: ['status', 'email', 'friends', 'notify', 'wall'] }));
-Router.get("/passport/auth/vkontakte/callback", Passport.authenticate("vkontakte", { failureRedirect: "/error" }), (req, res) => {
+Router.get("/api/passport/auth/vkontakte", Passport.authenticate("vkontakte", { scope: ['status', 'email', 'friends', 'notify', 'wall'] }));
+Router.get("/api/passport/auth/vkontakte/callback", Passport.authenticate("vkontakte", { failureRedirect: "/error" }), (req, res) => {
     res.status(200).send({
         "code": 200,
         "message": "OK",
@@ -120,8 +120,8 @@ Passport.deserializeUser(function (data, done) {
 });
 
 
-Router.get("/passport/auth/facebook", Passport.authenticate("facebook"));
-Router.get("/passport/auth/facebook/callback", Passport.authenticate("facebook", { failureRedirect: "/error" }), (req, res) => {
+Router.get("/api/passport/auth/facebook", Passport.authenticate("facebook"));
+Router.get("/api/passport/auth/facebook/callback", Passport.authenticate("facebook", { failureRedirect: "/error" }), (req, res) => {
     res.redirect("/");
 });
 Passport.use(new FacebookStrategy({
@@ -135,8 +135,8 @@ Passport.use(new FacebookStrategy({
 ));
 
 
-Router.get("/passport/auth/twitter", Passport.authenticate("twitter"));
-Router.get("/passport/auth/twitter/callback", Passport.authenticate("twitter", { failureRedirect: "/error" }), (req, res) => {
+Router.get("/api/passport/auth/twitter", Passport.authenticate("twitter"));
+Router.get("/api/passport/auth/twitter/callback", Passport.authenticate("twitter", { failureRedirect: "/error" }), (req, res) => {
     res.redirect("/");
 });
 Passport.use(new TwitterStrategy({
@@ -150,8 +150,8 @@ Passport.use(new TwitterStrategy({
 ));
 
 
-Router.get("/passport/auth/google", Passport.authenticate("google", { scope: ["profile"] }));
-Router.get("/passport/auth/google/callback", Passport.authenticate("google", { failureRedirect: "/error" }), (req, res) => {
+Router.get("/api/passport/auth/google", Passport.authenticate("google", { scope: ["profile"] }));
+Router.get("/api/passport/auth/google/callback", Passport.authenticate("google", { failureRedirect: "/error" }), (req, res) => {
     res.redirect("/");
 });
 Passport.use(new GoogleStrategy({
