@@ -1,2 +1,6 @@
 # node-course
-Node Course - mentoring program (to be updated...)
+Node Server
+- Serve static HTML pages
+- Command line support
+- Mongoose
+- PostgreSQL
