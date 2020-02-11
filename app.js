@@ -5,18 +5,44 @@ import Express from "express";
 import Passport from "passport";
 import Mongoose from "mongoose";
 import cors from "cors";
+import { Worker, MessageChannel } from 'worker_threads';
+import WorkerPool from './workers/WorkerPool';
 
-import { IndexRouter, ErrorRouter, UserRouter, ProductRouter,
-    ReviewRouter, AuthRouter, CityRouter } from "./routes";
+import {
+    IndexRouter, ErrorRouter, UserRouter, ProductRouter,
+    ReviewRouter, AuthRouter, CityRouter
+} from "./routes";
 import { QueryParserMiddleware, CookieParserMiddleware } from "./middlewares";
 import { Importer, DirWatcher } from "./modules";
 import { UserController } from "./controllers";
 
 try {
     Mongoose.connect("mongodb://localhost:27017/node-course");
+    console.log(`MongoDB connected on port: 27017`);
 } catch (error) {
     console.log(`MongoDB connection Error: ${error}`);
 }
+
+// Worker Pool
+// const worker = new Worker(Path.join(__dirname, 'workers', 'worker.js'));
+// const { port1, port2 } = new MessageChannel();
+// port1.on('message', (message) => {
+//     console.log('message from worker:', message);
+// });
+// worker.postMessage({ port: port2 }, [port2]);
+
+const pool = new WorkerPool(Path.join(__dirname, 'workers', 'Worker.js'), 8);
+
+// const items = [...new Array(100)].fill(null);
+// Promise.all(
+//     items.map(async (_, i) => {
+//         await pool.run(() => ({ i }));
+//         console.log('Worker Task Finished', i);
+//     }),
+// ).then(() => {
+//     console.log('All Workers Tasks Finished');
+// });
+
 
 const app = Express();
 const DATA_DIR = Path.join(__dirname, "data");
