@@ -75,6 +75,9 @@ app.use(ProductRouter);
 app.use(ReviewRouter);
 app.use(CityRouter);
 
+// Serve static content
+app.use(Express.static('public'));
+
 app.use((req, res, next) => {
     let err = new Error(`Page Not Found - ${JSON.stringify(req.parsedQuery.href)}`);
     logger.error(err);
